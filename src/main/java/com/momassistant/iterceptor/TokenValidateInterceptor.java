@@ -1,6 +1,8 @@
 package com.momassistant.iterceptor;
 
+import com.momassistant.exception.TokenValidateException;
 import com.momassistant.service.UserInfoService;
+import com.momassistant.utils.SpringContextAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,8 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 public class TokenValidateInterceptor implements HandlerInterceptor {
 
 
-    @Autowired
-    private UserInfoService userInfoService;
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)
             throws Exception {
@@ -33,6 +33,7 @@ public class TokenValidateInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj)
             throws Exception {
+        UserInfoService userInfoService = SpringContextAware.getBean(UserInfoService.class);
         String userToken = request.getParameter("userToken");
         String userIdStr = request.getParameter("userId");
         int userId = 0;
@@ -43,7 +44,7 @@ public class TokenValidateInterceptor implements HandlerInterceptor {
         }
 
         if (userId == 0 || !userInfoService.validateToken(userId, userToken)) {
-            return false;
+            throw new TokenValidateException();
         }
         return true;
     }
