@@ -1,9 +1,11 @@
 package com.momassistant.service;
 
+import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.UserSessionMapper;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.mapper.model.UserSession;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -20,18 +22,30 @@ public class UserInfoService {
     @Autowired
     private UserSessionMapper userSessionMapper;
 
-    public UserInfo getUser(String openId) {
-        UserInfo userInfo = userInfoMapper.getUser(openId);
-        if (userInfo == null) {
-            userInfo = new UserInfo();
+    public UserInfo updateUserInfo(UserInfoReq userInfoReq) {
+        UserInfo userInfo = new UserInfo();
+        BeanUtils.copyProperties(userInfoReq, userInfo);
+        userInfoMapper.updateUserDetail(userInfo);
+        return userInfoMapper.getUserDetail(userInfoReq.getUserId());
+    }
+
+    public int getUserId(String openId) {
+        int userId = userInfoMapper.getUserId(openId);
+        if (userId <= 0) {
+            UserInfo userInfo = new UserInfo();
             userInfo.setOpenId(openId);
             try {
                 userInfoMapper.createUser(userInfo);
+                userId = userInfo.getUserId();
             } catch (DuplicateKeyException ignore) {
-                userInfo = userInfoMapper.getUser(openId);
+                userId = userInfoMapper.getUserId(openId);
             }
         }
-        return userInfo;
+        return userId;
+    }
+
+    public UserInfo getUserDetail(int userId) {
+        return userInfoMapper.getUserDetail(userId);
     }
 
     public void updateToken(int userId, String userToken, Date expiredAt) {

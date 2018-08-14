@@ -10,10 +10,14 @@ import java.util.Date;
  */
 @Data
 public class UserInfo implements Serializable{
-
     private int userId;
     private String openId;
-    private String userToken;
-    private Date expireAt;
-    private Date createTime;
+    private String wechatName;
+    private String userName;
+    private String userHeadPic;
+    private String userRegion;
+    private int gender;
+    private int mobile;
+    private int userType;
+    private Date edc;
 }
