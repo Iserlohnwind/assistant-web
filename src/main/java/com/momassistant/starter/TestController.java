@@ -1,4 +1,4 @@
-package com.momassistant.assistantweb;
+package com.momassistant.starter;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
