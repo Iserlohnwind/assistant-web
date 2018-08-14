@@ -1,6 +1,5 @@
 package com.momassistant.mapper;
 
-import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.mapper.model.UserSession;
 import org.apache.ibatis.annotations.*;
 
