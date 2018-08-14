@@ -49,4 +49,19 @@ public interface UserInfoMapper {
     void addToken(@Param("userId")int userId, @Param("userToken")String userToken, @Param("expiredTime")Date expiredTime);
 
 
+    @Update("update UserInfo set wechatName=#{wechatName}, userHeadPic=#{userHeadPic} where id=#{userId} ")
+    void updateUserWechat(@Param("userId") int userId,
+                          @Param("wechatName") String wechatName,
+                          @Param("userHeadPic") String userHeadPic);
+
+    @Update("update UserInfo set userName=#{userName}, gender=#{gender}, mobile=#{mobile}, userRegion=#{userRegion}, " +
+            "edcDate=#{edcDate} where id=#{userId} ")
+    void updatePregancyInfo(@Param("userId") int userId,
+                            @Param("userName") String userName,
+                            @Param("gender") int gender,
+                            @Param("mobile") int mobile,
+                            @Param("userRegion") String userRegion,
+                            @Param("edcDate") Date edcDate);
+
+
 }

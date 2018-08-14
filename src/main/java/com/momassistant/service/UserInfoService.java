@@ -63,4 +63,23 @@ public class UserInfoService {
         }
         return false;
     }
+
+    public void updateUserWechatInfo(UserInfoReq userInfoReq) {
+        userInfoMapper.updateUserWechat(
+                userInfoReq.getUserId(),
+                userInfoReq.getWechatName(),
+                userInfoReq.getUserHeadPic()
+        );
+    }
+
+    public void updatePregancyInfo(UserInfoReq userInfoReq) {
+        userInfoMapper.updatePregancyInfo(
+                userInfoReq.getUserId(),
+                userInfoReq.getUserName(),
+                2,
+                userInfoReq.getMobile(),
+                userInfoReq.getUserRegion(),
+                userInfoReq.getEdc()
+        );
+    }
 }
