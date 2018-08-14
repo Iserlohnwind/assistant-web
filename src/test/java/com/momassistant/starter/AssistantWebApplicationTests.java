@@ -24,7 +24,7 @@ public class AssistantWebApplicationTests {
 
 	@Test
 	public void testUserInfo() {
-		UserSession userSession = userSessionMapper.findByUserIdAndToken(1, "");
+		UserSession userSession = userSessionMapper.findByUserIdAndToken(1, "aaa");
 		System.out.println(userSession == null);
 	}
 }
