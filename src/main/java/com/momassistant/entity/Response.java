@@ -21,6 +21,7 @@ public class Response<T> {
     public static<T> Response<T> error(ReturnCode returnCode) {
         Response response = new Response();
         response.setCode(returnCode.getCode());
+        response.setMsg(returnCode.getMsg());
         return response;
     }
 }
