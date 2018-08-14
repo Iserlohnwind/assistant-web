@@ -31,18 +31,18 @@ public class AuthController {
         if (StringUtils.isNotEmpty(openId)) {
             return Response.error(ReturnCode.LOGIN_FAILED);
         }
-        UserInfo userInfo = userInfoService.getUser(openId);
-        if (userInfo == null) {
+        int userId = userInfoService.getUserId(openId);
+        if (userId <= 0) {
             return Response.error(ReturnCode.LOGIN_FAILED);
         }
 
-        String token = UserTokenGenerator.createToken(userInfo.getUserId(), openId);
+        String token = UserTokenGenerator.createToken(userId, openId);
         //会话要缓存在服务器一段时间
-        userInfoService.updateToken(userInfo.getUserId(), token, DateUtil.addSeconds(new Date(), Constant.USER_SESSION_TTL));
+        userInfoService.updateToken(userId, token, DateUtil.addSeconds(new Date(), Constant.USER_SESSION_TTL));
 
 
         UserSession userSession = new UserSession();
-        userSession.setUserId(userInfo.getUserId());
+        userSession.setUserId(userId);
         userSession.setUserToken(token);
         userSession.setTtl(Constant.USER_SESSION_TTL);
         return Response.success(userSession);
