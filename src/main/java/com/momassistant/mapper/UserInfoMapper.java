@@ -10,24 +10,38 @@ import java.util.Date;
  */
 @Mapper
 public interface UserInfoMapper {
-    @Select("SELECT * FROM UserInfo WHERE id = #{userId} and token = #{userToken}")
-    @Results({
-            @Result(property = "userId",  column = "id"),
-            @Result(property = "userToken", column = "token")
-    })
-    UserInfo findByUserIdAndToken(@Param("userId") int userId, @Param("token") String userToken);
+    @Select("SELECT id FROM UserInfo WHERE openId = #{openId}")
+    int getUserId(@Param("openId") String openId);
 
-    @Select("SELECT * FROM UserInfo WHERE openId = #{openId}")
+
+    @Select("SELECT * FROM UserInfo WHERE id = #{userId}")
     @Results({
             @Result(property = "userId",  column = "id"),
-            @Result(property = "openId",  column = "openId"),
+            @Result(property = "wechatName",  column = "wechatName"),
+            @Result(property = "userName",  column = "userName"),
+            @Result(property = "userHeadPic",  column = "userHeadPic"),
+            @Result(property = "userRegion",  column = "userRegion"),
+            @Result(property = "gender",  column = "gender"),
+            @Result(property = "mobile",  column = "mobile"),
+            @Result(property = "userType",  column = "userType"),
+            @Result(property = "edc",  column = "edc"),
+
     })
-    UserInfo getUser(@Param("openId") String openId);
+    UserInfo getUserDetail(@Param("userId") int userId);
+
 
 
     @Insert("insert into UserInfo(openId,createTime) values(#{openId}, now())")
     @Options(useGeneratedKeys=true,keyProperty="id")
     UserInfo createUser(UserInfo userInfo);
+
+
+    @Update(
+            "update UserInfo set wechatName=#{wechatName}, userName=#{userName},userHeadPic=#{userHeadPic}," +
+                    "userRegion=#{userRegion},gender=#{gender},mobile=#{mobile},userType=#{userType},edc=#{edc}" +
+                    " where id=#{userId}"
+    )
+    void updateUserDetail(UserInfo userInfo);
 
     @Update(
             "update UserInfo set token=#{userToken}, expiredTime=#{expiredTime} where id=#{userId}"

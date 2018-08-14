@@ -1,10 +1,12 @@
 package com.momassistant.iterceptor;
 
+import com.momassistant.annotations.TokenValidate;
 import com.momassistant.exception.TokenValidateException;
 import com.momassistant.service.UserInfoService;
 import com.momassistant.utils.SpringContextAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -31,8 +33,12 @@ public class TokenValidateInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object obj)
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        TokenValidate tokenValidate = ((HandlerMethod) handler).getMethodAnnotation(TokenValidate.class);
+        if (tokenValidate == null) {
+            return true;
+        }
         UserInfoService userInfoService = SpringContextAware.getBean(UserInfoService.class);
         String userToken = request.getParameter("userToken");
         String userIdStr = request.getParameter("userId");

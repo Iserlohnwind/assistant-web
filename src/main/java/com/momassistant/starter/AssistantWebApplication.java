@@ -25,7 +25,7 @@ public class AssistantWebApplication extends WebMvcConfigurationSupport {
 	}
 
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new TokenValidateInterceptor()).addPathPatterns("/testAuth");
+		registry.addInterceptor(new TokenValidateInterceptor()).addPathPatterns("/**");
 		System.out.println("===========   拦截器注册完毕   ===========");
 	}
 }
