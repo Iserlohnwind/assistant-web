@@ -9,4 +9,5 @@ import lombok.Data;
 public class UserSession {
     private int userId;
     private String userToken;
+    private long ttl;
 }
