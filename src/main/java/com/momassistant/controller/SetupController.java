@@ -1,18 +1,15 @@
 package com.momassistant.controller;
 
+import com.momassistant.annotations.UserValidate;
 import com.momassistant.entity.Response;
-import com.momassistant.entity.UserInfoDTO;
-import com.momassistant.entity.UserWechat;
 import com.momassistant.entity.request.BabyInfoReq;
 import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.service.BabyInfoService;
 import com.momassistant.service.UserInfoService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,6 +31,7 @@ public class SetupController {
      * @return
      */
     @RequestMapping("setupWechatInfo")
+    @UserValidate
     public Response<Boolean> setupUserWechatInfo(UserInfoReq userInfoReq) {
         userInfoService.updateUserWechatInfo(userInfoReq);
         return Response.success(Boolean.TRUE);
@@ -46,6 +44,7 @@ public class SetupController {
      * @return
      */
     @RequestMapping("setupPregancyInfo")
+    @UserValidate
     public Response<Boolean> setupPregancyInfo(UserInfoReq userInfoReq) {
         userInfoService.updatePregancyInfo(userInfoReq);
         return Response.success(Boolean.TRUE);
@@ -59,6 +58,7 @@ public class SetupController {
      * @return
      */
     @RequestMapping("setupBabyInfo")
+    @UserValidate
     public Response<Boolean> setupBabyInfo(UserInfoReq userInfoReq, List<BabyInfoReq> babyInfoReqList) {
         userInfoService.updatePregancyInfo(userInfoReq);
         babyInfoService.updateBabyInfo(userInfoReq, babyInfoReqList);

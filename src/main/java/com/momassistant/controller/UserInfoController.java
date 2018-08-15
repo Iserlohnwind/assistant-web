@@ -1,6 +1,6 @@
 package com.momassistant.controller;
 
-import com.momassistant.annotations.TokenValidate;
+import com.momassistant.annotations.UserValidate;
 import com.momassistant.entity.Response;
 import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.mapper.model.UserInfo;
@@ -17,13 +17,13 @@ public class UserInfoController {
     @Autowired
     private UserInfoService userInfoService;
     @RequestMapping("/userInfo/update")
-    @TokenValidate
+    @UserValidate
     public Response<UserInfo> updateUserInfo(UserInfoReq userInfoReq) {
         return Response.success(userInfoService.updateUserInfo(userInfoReq));
     }
 
     @RequestMapping("/userInfo/get")
-    @TokenValidate
+    @UserValidate
     public Response<UserInfo> getUserInfo(int userId) {
         return Response.success(userInfoService.getUserDetail(userId));
     }
