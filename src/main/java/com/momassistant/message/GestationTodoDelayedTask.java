@@ -21,7 +21,7 @@ import java.util.List;
  * Created by zhufeng on 2018/8/16.
  * 孕期todo task
  */
-@Component
+@Component("gestationTodoDelayedTask")
 public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     @Autowired
     private TodoTypeMapper todoTypeMapper;
