@@ -28,10 +28,6 @@ public abstract class DelayedTask<T> {
 
 
 
-    /**
-     * 初始化守护线程
-     */
-
     @PostConstruct
     public void init() {
         initDaemon();
@@ -65,9 +61,7 @@ public abstract class DelayedTask<T> {
      * 用户为问题设置延迟时间
      */
     public void put(Date date, Todo task) {
-        //创建一个任务
         DelayedMessage k = new DelayedMessage(date, task);
-        //将任务放在延迟的队列中
         t.put(k);
     }
 
