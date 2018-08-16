@@ -1,5 +1,6 @@
 package com.momassistant.service;
 
+import com.momassistant.enums.TodoMainType;
 import com.momassistant.mapper.TodoLogMapper;
 import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
@@ -41,7 +42,7 @@ public class GestationTodoService {
             GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), todoType.getTitleTemplate(), todoType.getContentTemplate(), todoType.getUrlTemplate());
             Date sendTime = calSendTime(userInfo.getEdc(), todoType);
             TodoLog todoLog = createTodoLog(sendTime, todo);
-            todoLogMapper.updateLog(todoLog);
+            todoLogMapper.insertLog(todoLog);
             gestationTodoDelayedTask.put(sendTime, todo);
         }
     }
@@ -63,6 +64,7 @@ public class GestationTodoService {
         todoLog.setUrl(todo.getUrl());
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
+        todoLog.setMainTypeId(TodoMainType.GESTATION.getType());
         return todoLog;
     }
 }

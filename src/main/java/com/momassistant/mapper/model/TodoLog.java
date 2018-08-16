@@ -14,6 +14,7 @@ public class TodoLog implements Serializable{
     private int userId;
     private String opendId;
     private int typeId;
+    private int mainTypeId;
     private String title;
     private String content;
     private String url;

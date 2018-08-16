@@ -1,5 +1,6 @@
 package com.momassistant.message;
 
+import com.momassistant.enums.TodoMainType;
 import com.momassistant.mapper.TodoLogMapper;
 import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
@@ -33,7 +34,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         System.out.println();
         List<TodoLog> todoLogList = null;
         int minId = 0;
-        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId))) {
+        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.GESTATION.getType()))) {
             for (TodoLog todoLog : todoLogList) {
                 UserInfo userInfo = userInfoMapper.getUserDetail(todoLog.getUserId());
                 GestationTodo todo = new GestationTodo(todoLog.getTypeId(), todoLog.getUserId(), userInfo.getOpenId(), todoLog.getTitle(), todoLog.getContent(), todoLog.getUrl());
@@ -77,6 +78,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         todoLog.setUrl(todo.getUrl());
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
+        todoLog.setMainTypeId(TodoMainType.GESTATION.getType());
         return todoLog;
     }
 

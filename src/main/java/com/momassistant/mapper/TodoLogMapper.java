@@ -12,21 +12,25 @@ import java.util.List;
  */
 @Mapper
 public interface TodoLogMapper {
-    @Select("SELECT * FROM TodoLog WHERE id > #{minId} and status=1 order by id asc limit 100")
+    @Select("SELECT * FROM TodoLog WHERE id > #{minId} and mainTypeId=#{mainTypeId} and status=1 order by id asc limit 100")
     @Results({
             @Result(property = "id",  column = "id"),
             @Result(property = "userId",  column = "userId"),
             @Result(property = "typeId",  column = "typeId"),
             @Result(property = "sendTime",  column = "sendTime"),
+            @Result(property = "title",  column = "title"),
+            @Result(property = "content",  column = "content"),
+            @Result(property = "url",  column = "url"),
+
     })
-    List<TodoLog> paginateLogs(@Param("minId") int minId);
+    List<TodoLog> paginateLogs(@Param("minId") int minId, @Param("mainTypeId") int mainTypeId);
 
 
-    @Insert("INSERT INTO TodoLog(userId, typeId, node, sendTime) VALUES(#{userId},#{typeId}, #{node}, #{sendTime})")
+    @Insert("INSERT INTO TodoLog(userId, openId, typeId, mainTypeId, title, content, url, sendTime) VALUES(#{userId},#{openId},#{typeId},#{mainTypeId}, #{title},#{content},#{url}, #{sendTime})")
     @Options(useGeneratedKeys=true,keyProperty="id")
     void insertLog(TodoLog todoLog);
 
-    @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime} WEHRE userId=#{userId}")
+    @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},title=#{title},content=#{content},url=#{url} WEHRE userId=#{userId}")
     void updateLog(TodoLog todoLog);
 
 }
