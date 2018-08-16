@@ -11,8 +11,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by zhufeng on 2018/8/15.
  */
-@Component
-public class TodoTask {
+public abstract class DelayedTask<T> {
 
 
     Executor executor = Executors.newFixedThreadPool(20);
@@ -20,7 +19,7 @@ public class TodoTask {
     /**
      * 创建一个最初为空的新 DelayQueue
      */
-    private DelayQueue<DelayedMessage> t = new DelayQueue<>();
+    private DelayQueue<DelayedMessage<T>> t = new DelayQueue<>();
 
     /**
      * 守护线程
@@ -32,27 +31,25 @@ public class TodoTask {
     /**
      * 初始化守护线程
      */
+
     @PostConstruct
     public void init() {
-        daemonThread = new Thread(() -> execute());
-        daemonThread.setDaemon(true);
-        daemonThread.setName("Task Queue Daemon Thread");
-        daemonThread.start();
+        initDaemon();
+        initQueue();
         this.execute();
     }
 
     private void execute() {
-        System.out.println("start:" + System.currentTimeMillis());
         while (true) {
             try {
-                DelayedMessage t1 = t.take();
+                DelayedMessage<T> t1 = t.take();
                 if (t1 != null) {
                     //修改问题的状态
-                    Todo task = t1.getTask();
-                    if (task == null) {
+                    T message = t1.getMessage();
+                    if (message == null) {
                         continue;
                     }
-                    executor.execute(task);
+                    executor.execute(excuteRunable(message));
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -82,7 +79,17 @@ public class TodoTask {
         return t.remove(task);
     }
 
-
-    public static void main(String[] args) {
+    public void initDaemon() {
+        daemonThread = new Thread(() -> execute());
+        daemonThread.setDaemon(true);
+        daemonThread.setName("Task Queue Daemon Thread");
+        daemonThread.start();
     }
+
+
+    public abstract void initQueue();
+
+
+    public abstract Runnable excuteRunable(T t);
+
 }

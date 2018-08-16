@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by zhufeng on 2018/8/15.
  */
-public class DelayedMessage implements Delayed{
+public class DelayedMessage<T> implements Delayed{
     /**
      * 到期时间
      */
@@ -17,14 +17,14 @@ public class DelayedMessage implements Delayed{
     /**
      * 问题对象
      */
-    private final Todo task;
+    private final T message;
     private static final AtomicLong atomic = new AtomicLong(0);
 
     private final long n;
 
-    public DelayedMessage(Date todoDate, Todo t) {
+    public DelayedMessage(Date todoDate, T t) {
         this.todoDate = todoDate;
-        this.task = t;
+        this.message = t;
         this.n = atomic.getAndIncrement();
     }
 
@@ -57,13 +57,13 @@ public class DelayedMessage implements Delayed{
         return (d == 0) ? 0 : ((d < 0) ? -1 : 1);
     }
 
-    public Todo getTask() {
-        return this.task;
+    public T getMessage() {
+        return this.message;
     }
 
     @Override
     public int hashCode() {
-        return task.hashCode();
+        return message.hashCode();
     }
 
     @Override

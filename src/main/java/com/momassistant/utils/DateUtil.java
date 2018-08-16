@@ -14,4 +14,10 @@ public class DateUtil {
         toConvert.addSecond(seconds);
         return toConvert.convertToDate();
     }
+
+    public static Date addDays(Date from, int days) {
+        JDateTime toConvert = new JDateTime(from);
+        toConvert.addDay(days);
+        return toConvert.convertToDate();
+    }
 }

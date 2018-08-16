@@ -5,6 +5,7 @@ import com.momassistant.entity.Response;
 import com.momassistant.entity.request.BabyInfoReq;
 import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.service.BabyInfoService;
+import com.momassistant.service.GestationTodoService;
 import com.momassistant.service.UserInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,8 @@ public class SetupController {
     @Autowired
     BabyInfoService babyInfoService;
 
+    @Autowired
+    GestationTodoService gestationTodoService;
     /**
      * 保存用户微信信息
      *
@@ -47,6 +50,7 @@ public class SetupController {
     @UserValidate
     public Response<Boolean> setupPregancyInfo(UserInfoReq userInfoReq) {
         userInfoService.updatePregancyInfo(userInfoReq);
+        gestationTodoService.initGestationTodo(userInfoReq.getUserId());
         return Response.success(Boolean.TRUE);
     }
 
