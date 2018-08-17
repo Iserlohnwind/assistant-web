@@ -1,8 +1,11 @@
 package com.momassistant.message;
 
+import com.momassistant.mapper.model.TodoLog;
+import com.momassistant.mapper.model.TodoTypeDetail;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by zhufeng on 2018/8/15.
@@ -13,19 +16,29 @@ public class Todo{
     private String openId;
     private String title;
     private String content;
-    private String url;
 
     public Todo(int userId) {
         this.userId = userId;
     }
 
-    public Todo(int typeId, int userId, String openId, String title, String content, String url) {
+    public Todo(TodoLog todoLog, String openId) {
+        this.typeId = todoLog.getTypeId();
+        this.userId = todoLog.getUserId();
+        this.title = todoLog.getTitle();
+        this.content = todoLog.getContent();
+        this.openId = openId;
+    }
+
+    public Todo(int typeId, int userId, String openId, String title, List<TodoTypeDetail> todoTypeDetailList) {
         this.typeId = typeId;
         this.userId = userId;
         this.openId = openId;
         this.title = title;
-        this.content = content;
-        this.url = url;
+        StringBuilder contentSb = new StringBuilder();
+        for (TodoTypeDetail todoTypeDetail : todoTypeDetailList) {
+            contentSb.append(todoTypeDetail.getTitle()).append("\n").append(todoTypeDetail.getContent()).append("\n");
+        }
+
     }
     @Override
     public String toString() {
@@ -33,7 +46,6 @@ public class Todo{
                 "openId='" + openId + '\'' +
                 ", title='" + title + '\'' +
                 ", content='" + content + '\'' +
-                ", url='" + url + '\'' +
                 '}';
     }
 
@@ -76,15 +88,6 @@ public class Todo{
     public void setContent(String content) {
         this.content = content;
     }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

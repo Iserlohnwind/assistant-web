@@ -25,6 +25,7 @@ public interface UserInfoMapper {
             @Result(property = "mobile",  column = "mobile"),
             @Result(property = "userType",  column = "userType"),
             @Result(property = "edc",  column = "edc"),
+            @Result(property = "todoNotifySwitch",  column = "todoNotifySwitch"),
 
     })
     UserInfo getUserDetail(@Param("userId") int userId);

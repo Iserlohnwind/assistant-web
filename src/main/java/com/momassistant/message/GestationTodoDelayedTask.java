@@ -3,10 +3,12 @@ package com.momassistant.message;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
 import com.momassistant.mapper.TodoLogMapper;
+import com.momassistant.mapper.TodoTypeDetailMapper;
 import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.mapper.model.TodoType;
+import com.momassistant.mapper.model.TodoTypeDetail;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     @Autowired
     private TodoTypeMapper todoTypeMapper;
     @Autowired
+    private TodoTypeDetailMapper todoTypeDetailMapper;
+    @Autowired
     private TodoLogMapper todoLogMapper;
     @Autowired
     private UserInfoMapper userInfoMapper;
@@ -35,7 +39,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.GESTATION.getType()))) {
             for (TodoLog todoLog : todoLogList) {
                 UserInfo userInfo = userInfoMapper.getUserDetail(todoLog.getUserId());
-                GestationTodo todo = new GestationTodo(todoLog.getTypeId(), todoLog.getUserId(), userInfo.getOpenId(), todoLog.getTitle(), todoLog.getContent(), todoLog.getUrl());
+                GestationTodo todo = new GestationTodo(todoLog, userInfo.getOpenId());
                 put(todoLog.getSendTime(), todo);
                 minId = todoLog.getId();
             }
@@ -65,7 +69,8 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
 
     private void createNextTodo(GestationTodo oldTodo) {
         TodoType todoType = todoTypeMapper.findByPreId(oldTodo.getTypeId());
-        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), todoType.getTitleTemplate(), todoType.getContentTemplate(), todoType.getUrlTemplate());
+        List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
+        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), todoType.getTitle(), todoTypeDetailList);
         Date sendTime = calSendTime(oldTodo.getUserId(), todoType);
         put(sendTime, newTodo);
         TodoLog todoLog = new TodoLog();
@@ -80,7 +85,6 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         todoLog.setOpendId(todo.getOpenId());
         todoLog.setTitle(todo.getTitle());
         todoLog.setContent(todo.getContent());
-        todoLog.setUrl(todo.getUrl());
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

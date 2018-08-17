@@ -2,8 +2,6 @@ package com.momassistant.utils;
 
 import com.alibaba.fastjson.JSONObject;
 import com.momassistant.constants.WeixinConstant;
-import com.momassistant.entity.Response;
-import com.momassistant.entity.UserSession;
 import com.momassistant.entity.WechatAuthResponse;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;

@@ -2,10 +2,10 @@ package com.momassistant.controller;
 
 import com.momassistant.ReturnCode;
 import com.momassistant.constants.Constant;
+import com.momassistant.entity.request.LoginReq;
+import com.momassistant.entity.response.LoginResp;
 import com.momassistant.service.UserInfoService;
 import com.momassistant.entity.Response;
-import com.momassistant.entity.UserSession;
-import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.utils.DateUtil;
 import com.momassistant.utils.UserTokenGenerator;
 import com.momassistant.utils.WechatAuthUtil;
@@ -25,9 +25,9 @@ public class AuthController {
     @Autowired
     private UserInfoService userInfoService;
     //获取凭证校检接口
-    @RequestMapping("login")
-    public Response<UserSession> login(String code) {
-        String openId = WechatAuthUtil.auth(code);
+    @RequestMapping("/auth/login")
+    public Response<LoginResp> login(LoginReq loginReq) {
+        String openId = WechatAuthUtil.auth(loginReq.getCode());
         if (StringUtils.isNotEmpty(openId)) {
             return Response.error(ReturnCode.LOGIN_FAILED);
         }
@@ -41,14 +41,14 @@ public class AuthController {
         userInfoService.updateToken(userId, token, DateUtil.addSeconds(new Date(), Constant.USER_SESSION_TTL));
 
 
-        UserSession userSession = new UserSession();
-        userSession.setUserId(userId);
-        userSession.setUserToken(token);
-        userSession.setTtl(Constant.USER_SESSION_TTL);
-        return Response.success(userSession);
+        LoginResp loginResp = new LoginResp();
+        loginResp.setUserId(userId);
+        loginResp.setUserToken(token);
+        loginResp.setTtl(Constant.USER_SESSION_TTL);
+        return Response.success(loginResp);
     }
 
-    @RequestMapping("testAuth")
+    @RequestMapping("/auth/testAuth")
     public Response testAuth() {
         return Response.success(null);
     }

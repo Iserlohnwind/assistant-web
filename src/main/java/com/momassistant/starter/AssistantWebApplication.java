@@ -20,10 +20,6 @@ public class AssistantWebApplication extends WebMvcConfigurationSupport {
 		SpringApplication.run(AssistantWebApplication.class, args);
 	}
 
-	@Bean(name = "tokenValidateInterceptor")
-	TokenValidateInterceptor requestInterceptor() {
-		return new TokenValidateInterceptor();
-	}
 
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new TokenValidateInterceptor()).addPathPatterns("/**");

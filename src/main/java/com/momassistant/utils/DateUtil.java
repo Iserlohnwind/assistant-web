@@ -2,6 +2,7 @@ package com.momassistant.utils;
 
 import jodd.datetime.JDateTime;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -9,6 +10,7 @@ import java.util.Date;
  */
 public class DateUtil {
 
+    private static final String DATE_FORMAT_TEMPLATE = "yyyy-MM-dd";
     public static Date addSeconds(Date from, int seconds) {
         JDateTime toConvert = new JDateTime(from);
         toConvert.addSecond(seconds);
@@ -19,5 +21,10 @@ public class DateUtil {
         JDateTime toConvert = new JDateTime(from);
         toConvert.addDay(days);
         return toConvert.convertToDate();
+    }
+
+    public static String format(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT_TEMPLATE);
+        return simpleDateFormat.format(date);
     }
 }

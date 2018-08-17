@@ -3,16 +3,14 @@ package com.momassistant.mapper.model;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * Created by zhufeng on 2018/8/15.
  */
 @Data
-public class TodoType implements Serializable{
+public class TodoTypeDetail implements Serializable{
     private int id;
-    private int nextId;
-    private int preId;
-    private int todoDay;
+    private int typeId;
     private String title;
+    private String content;
 }
