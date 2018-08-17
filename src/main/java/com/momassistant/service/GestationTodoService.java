@@ -64,7 +64,7 @@ public class GestationTodoService {
     public UserGestationTodoResp getGestationTodoList(int userId) {
         UserGestationTodoResp userGestationTodoResp = new UserGestationTodoResp();
         UserInfo userInfo = userInfoMapper.getUserDetail(userId);
-        userGestationTodoResp.setEdcInterval((int) ((userInfo.getEdc().getTime() - new Date().getTime()) / (1000*3600*24)));
+        userGestationTodoResp.setEdcInterval(DateUtil.getIntervalOfCalendarDay(userInfo.getEdc() , new Date()));
         userGestationTodoResp.setTodoNotifySwitch(userInfo.getTodoNotifySwitch());
         List<GestationTodoItem> gestationTodoItemList = new ArrayList<GestationTodoItem>();
         TodoType currentTodoType = findLatestTodoType(userInfo.getEdc());
@@ -129,7 +129,7 @@ public class GestationTodoService {
 
     private TodoType findLatestTodoType(Date edc) {
         Date doc = DateUtil.addDays(edc, -DAY_INTERVAL);
-        int minTodoDay = (int) ((new Date().getTime() - doc.getTime()) / (1000*3600*24));
+        int minTodoDay = DateUtil.getIntervalOfCalendarDay(new Date(), doc);
         TodoType todoType = todoTypeMapper.findByMainTypeIdAndMinTodoDay(TodoMainType.GESTATION.getType(), minTodoDay);
         return todoType;
     }

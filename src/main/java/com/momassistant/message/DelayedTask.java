@@ -1,5 +1,6 @@
 package com.momassistant.message;
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +14,7 @@ import java.util.concurrent.Executors;
  */
 public abstract class DelayedTask<T> {
 
+    Executor mainExecutor = Executors.newFixedThreadPool(1);
 
     Executor executor = Executors.newFixedThreadPool(20);
 
@@ -29,11 +31,18 @@ public abstract class DelayedTask<T> {
 
 
     @PostConstruct
+    @Async
     public void init() {
         initDaemon();
         initQueue();
-        this.execute();
+        mainExecutor.execute(new Runnable() {
+            @Override
+            public void run() {
+                execute();
+            }
+        });
     }
+
 
     private void execute() {
         while (true) {

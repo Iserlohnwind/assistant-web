@@ -17,6 +17,7 @@ public class ControllerExceptionHandleAdvice {
 
     @ExceptionHandler
     public Response handler(HttpServletRequest req, HttpServletResponse res, Exception e) {
+        e.printStackTrace();
         if (e instanceof TokenValidateException) {
             return Response.error(ReturnCode.TOKEN_EXPIRED);
         }

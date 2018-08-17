@@ -15,4 +15,5 @@ public class TodoType implements Serializable{
     private int preId;
     private int todoDay;
     private String title;
+    private int mainType;
 }

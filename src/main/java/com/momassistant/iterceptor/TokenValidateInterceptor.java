@@ -39,8 +39,8 @@ public class TokenValidateInterceptor implements HandlerInterceptor {
             return true;
         }
         UserInfoService userInfoService = SpringContextAware.getBean(UserInfoService.class);
-        String userToken = request.getParameter("userToken");
-        String userIdStr = request.getParameter("userId");
+        String userToken = request.getHeader("userToken");
+        String userIdStr = request.getHeader("userId");
         int userId = 0;
         try {
             userId = Integer.parseInt(userIdStr);

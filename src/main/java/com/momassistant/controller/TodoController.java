@@ -7,7 +7,9 @@ import com.momassistant.entity.request.UserGestationTodoReq;
 import com.momassistant.entity.response.UserGestationTodoDetailResp;
 import com.momassistant.entity.response.UserGestationTodoResp;
 import com.momassistant.service.GestationTodoService;
+import com.momassistant.utils.HtmlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,13 +25,12 @@ public class TodoController {
     @RequestMapping("/todo/getGestationTodo")
     @UserValidate
     public Response<UserGestationTodoResp> getGestationTodo(UserGestationTodoReq req) {
-        int userId = 0;
-        return Response.success(gestationTodoService.getGestationTodoList(userId));
+        return Response.success(gestationTodoService.getGestationTodoList(HtmlUtil.getUserId()));
     }
 
     @RequestMapping("/todo/getGestationTodoDetail")
     @UserValidate
-    public Response<UserGestationTodoDetailResp> getGestationTodoDetail(UserGestationTodoDetailReq req) {
+    public Response<UserGestationTodoDetailResp> getGestationTodoDetail(@RequestBody UserGestationTodoDetailReq req) {
         return Response.success(gestationTodoService.getGestationTodoDetail(req.getTypeId()));
     }
 }

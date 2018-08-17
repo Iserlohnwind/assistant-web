@@ -15,6 +15,7 @@ public interface TodoTypeMapper {
             @Result(property = "nextId",  column = "nextId"),
             @Result(property = "preId",  column = "preId"),
             @Result(property = "title",  column = "title"),
+            @Result(property = "mainType",  column = "mainType"),
     })
     TodoType findById(@Param("typeId") int typeId);
 
@@ -25,16 +26,18 @@ public interface TodoTypeMapper {
             @Result(property = "preId",  column = "preId"),
             @Result(property = "title",  column = "title"),
             @Result(property = "todoDay",  column = "todoDay"),
+            @Result(property = "mainType",  column = "mainType"),
     })
     TodoType findByPreId(@Param("preId") int preId);
 
-    @Select("SELECT * FROM TodoType WHERE mainTypeId = #{mainTypeId} and minTodoDay >= #{minTodoDay}")
+    @Select("SELECT * FROM TodoType WHERE mainType = #{mainType} and todoDay >= #{minTodoDay} ORDER BY todoDay asc LIMIT 1")
     @Results({
             @Result(property = "id",  column = "id"),
             @Result(property = "nextId",  column = "nextId"),
             @Result(property = "preId",  column = "preId"),
             @Result(property = "title",  column = "title"),
             @Result(property = "todoDay",  column = "todoDay"),
+            @Result(property = "mainType",  column = "mainType"),
     })
-    TodoType findByMainTypeIdAndMinTodoDay(@Param("mainTypeId") int mainTypeId, @Param("minTodoDay") int minTodoDay);
+    TodoType findByMainTypeIdAndMinTodoDay(@Param("mainType") int mainType, @Param("minTodoDay") int minTodoDay);
 }
