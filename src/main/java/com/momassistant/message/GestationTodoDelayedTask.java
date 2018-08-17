@@ -1,6 +1,7 @@
 package com.momassistant.message;
 
 import com.momassistant.enums.TodoMainType;
+import com.momassistant.enums.TodoNotifySwitch;
 import com.momassistant.mapper.TodoLogMapper;
 import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
@@ -10,10 +11,8 @@ import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +30,6 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     private UserInfoMapper userInfoMapper;
 
     public void initQueue() {
-        System.out.println();
         List<TodoLog> todoLogList = null;
         int minId = 0;
         while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.GESTATION.getType()))) {
@@ -49,23 +47,30 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         return new Runnable() {
             @Override
             public void run() {
-                //发送过程，暂未实现
-                //....
-                TodoType todoType = todoTypeMapper.findByPreId(todo.getTypeId());
+
+                if (checkTodoNotifySwitchOn(todo.getUserId())){
+                    //发送过程，暂未实现
+                    //....
+                }
                 //新建下一个提醒,存入队列
-                GestationTodo newTodo = createNextTodo(todo, todoType);
-                Date sendTime = calSendTime(todo.getUserId(), todoType);
-                put(sendTime, newTodo);
-                TodoLog todoLog = new TodoLog();
-                createTodoLog(sendTime, newTodo);
-                todoLogMapper.updateLog(todoLog);
+                createNextTodo(todo);
             }
         };
     }
 
-    private GestationTodo createNextTodo(GestationTodo oldTodo, TodoType nextTodoType) {
-        GestationTodo newTodo = new GestationTodo(nextTodoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), nextTodoType.getTitleTemplate(), nextTodoType.getContentTemplate(), nextTodoType.getUrlTemplate());
-        return newTodo;
+    private boolean checkTodoNotifySwitchOn(int userId) {
+        return userInfoMapper.getTodoNotifySwitch(userId) == TodoNotifySwitch.ON.getVal();
+    }
+
+
+    private void createNextTodo(GestationTodo oldTodo) {
+        TodoType todoType = todoTypeMapper.findByPreId(oldTodo.getTypeId());
+        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), todoType.getTitleTemplate(), todoType.getContentTemplate(), todoType.getUrlTemplate());
+        Date sendTime = calSendTime(oldTodo.getUserId(), todoType);
+        put(sendTime, newTodo);
+        TodoLog todoLog = new TodoLog();
+        createTodoLog(sendTime, newTodo);
+        todoLogMapper.updateLog(todoLog);
     }
 
     private TodoLog createTodoLog(Date sendTime, Todo todo) {

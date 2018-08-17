@@ -65,6 +65,14 @@ public abstract class DelayedTask<T> {
         t.put(k);
     }
 
+    /**
+     * 结束订单
+     * @param task
+     */
+    public boolean endTask(DelayedMessage task){
+        return t.remove(task);
+    }
+
     public void initDaemon() {
         daemonThread = new Thread(() -> execute());
         daemonThread.setDaemon(true);

@@ -20,4 +20,5 @@ public class UserInfo implements Serializable{
     private int mobile;
     private int userType;
     private Date edc;
+    private int todoNotifySwitch;
 }

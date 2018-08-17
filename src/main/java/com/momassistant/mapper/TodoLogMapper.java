@@ -33,4 +33,8 @@ public interface TodoLogMapper {
     @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},title=#{title},content=#{content},url=#{url} WEHRE userId=#{userId}")
     void updateLog(TodoLog todoLog);
 
+
+    @Delete("DELETE FROM TodoLog  WEHRE userId=#{userId}")
+    void deleteLog(@Param("userId")int userId);
+
 }

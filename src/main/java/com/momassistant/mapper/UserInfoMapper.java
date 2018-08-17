@@ -44,6 +44,15 @@ public interface UserInfoMapper {
     void updateUserDetail(UserInfo userInfo);
 
     @Update(
+            "update UserInfo set  todoNotifySwitch=#{todoNotifySwitch} where id=#{userId}"
+    )
+    void updateTodoNotifySwitch(@Param("userId") int userId, @Param("todoNotifySwitch") int todoNotifySwitch);
+
+    @Select("SELECT todoNotifySwitch FROM UserInfo WHERE id = #{userId}")
+    int getTodoNotifySwitch(@Param("userId") int userId);
+
+
+    @Update(
             "update UserInfo set token=#{userToken}, expiredTime=#{expiredTime} where id=#{userId}"
     )
     void addToken(@Param("userId")int userId, @Param("userToken")String userToken, @Param("expiredTime")Date expiredTime);
