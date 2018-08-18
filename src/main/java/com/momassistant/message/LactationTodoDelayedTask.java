@@ -2,14 +2,8 @@ package com.momassistant.message;
 
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
-import com.momassistant.mapper.TodoLogMapper;
-import com.momassistant.mapper.TodoTypeDetailMapper;
-import com.momassistant.mapper.TodoTypeMapper;
-import com.momassistant.mapper.UserInfoMapper;
-import com.momassistant.mapper.model.TodoLog;
-import com.momassistant.mapper.model.TodoType;
-import com.momassistant.mapper.model.TodoTypeDetail;
-import com.momassistant.mapper.model.UserInfo;
+import com.momassistant.mapper.*;
+import com.momassistant.mapper.model.*;
 import com.momassistant.utils.DateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,8 +16,8 @@ import java.util.List;
  * Created by zhufeng on 2018/8/16.
  * 孕期todo task
  */
-@Component("gestationTodoDelayedTask")
-public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
+@Component("lactationTodoDelayedTask")
+public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
     @Autowired
     private TodoTypeMapper todoTypeMapper;
     @Autowired
@@ -32,13 +26,16 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     private TodoLogMapper todoLogMapper;
     @Autowired
     private UserInfoMapper userInfoMapper;
+    @Autowired
+    private BabyInfoMapper babyInfoMapper;
 
     public void initQueue() {
         List<TodoLog> todoLogList = null;
         int minId = 0;
-        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.GESTATION.getType()))) {
+        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.Lactation.getType()))) {
             for (TodoLog todoLog : todoLogList) {
-                GestationTodo todo = new GestationTodo(todoLog);
+                UserInfo userInfo = userInfoMapper.getUserDetail(todoLog.getUserId());
+                LactationTodo todo = new LactationTodo(todoLog);
                 put(todoLog.getSendTime(), todo);
                 minId = todoLog.getId();
             }
@@ -46,7 +43,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     }
 
     @Override
-    public Runnable excuteRunable(GestationTodo todo) {
+    public Runnable excuteRunable(LactationTodo todo) {
         return new Runnable() {
             @Override
             public void run() {
@@ -66,33 +63,36 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     }
 
 
-    private void createNextTodo(GestationTodo oldTodo) {
+    private void createNextTodo(LactationTodo oldTodo) {
         TodoType todoType = todoTypeMapper.findByPreId(oldTodo.getTypeId());
         List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
-        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), todoType.getTitle(), todoTypeDetailList);
-        Date sendTime = calSendTime(oldTodo.getUserId(), todoType);
+        BabyInfo babyInfo = babyInfoMapper.findByUserIdAndBabyId(oldTodo.getUserId(), oldTodo.getBabyId());
+        LactationTodo newTodo = new LactationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), todoType.getTitle(), todoTypeDetailList, babyInfo);
+        Date sendTime = calSendTime(babyInfo, todoType);
         put(sendTime, newTodo);
         TodoLog todoLog = new TodoLog();
-        createTodoLog(sendTime, newTodo);
+        createTodoLog(sendTime, newTodo, babyInfo);
         todoLogMapper.updateLog(todoLog);
     }
 
-    private TodoLog createTodoLog(Date sendTime, Todo todo) {
+    private TodoLog createTodoLog(Date sendTime, Todo todo, BabyInfo babyInfo) {
         //新提醒入库
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpendId(todo.getOpenId());
+        todoLog.setBabyId(babyInfo.getBabyId());
+        todoLog.setBabyName(babyInfo.getBabyName());
         todoLog.setTitle(todo.getTitle());
         todoLog.setContent(todo.getContent());
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
-        todoLog.setMainTypeId(TodoMainType.GESTATION.getType());
+        todoLog.setMainTypeId(TodoMainType.Lactation.getType());
         return todoLog;
     }
 
-    private Date calSendTime(int userId, TodoType todoType) {
-        Date edc = userInfoMapper.getUserDetail(userId).getEdc();
-        Date sendTime = DateUtil.addDays(edc, todoType.getTodoDay());
+    private Date calSendTime(BabyInfo babyInfo, TodoType todoType) {
+        Date birthday = babyInfo.getBabyBirthday();
+        Date sendTime = DateUtil.addDays(birthday, todoType.getTodoDay());
         return sendTime;
     }
 }

@@ -6,8 +6,11 @@ import com.momassistant.entity.request.BabyInfoReq;
 import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.service.BabyInfoService;
 import com.momassistant.service.GestationTodoService;
+import com.momassistant.service.LactationTodoService;
 import com.momassistant.service.UserInfoService;
+import com.momassistant.utils.HtmlUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,6 +30,9 @@ public class SetupController {
 
     @Autowired
     GestationTodoService gestationTodoService;
+
+    @Autowired
+    LactationTodoService lactationTodoService;
     /**
      * 保存用户微信信息
      *
@@ -35,7 +41,7 @@ public class SetupController {
      */
     @RequestMapping("setupWechatInfo")
     @UserValidate
-    public Response<Boolean> setupUserWechatInfo(UserInfoReq userInfoReq) {
+    public Response<Boolean> setupUserWechatInfo(@RequestBody UserInfoReq userInfoReq) {
         userInfoService.updateUserWechatInfo(userInfoReq);
         return Response.success(Boolean.TRUE);
     }
@@ -48,7 +54,7 @@ public class SetupController {
      */
     @RequestMapping("setupPregancyInfo")
     @UserValidate
-    public Response<Boolean> setupPregancyInfo(UserInfoReq userInfoReq) {
+    public Response<Boolean> setupPregancyInfo(@RequestBody UserInfoReq userInfoReq) {
         userInfoService.updatePregancyInfo(userInfoReq);
         gestationTodoService.initGestationTodo(userInfoReq.getUserId());
         return Response.success(Boolean.TRUE);
@@ -66,6 +72,7 @@ public class SetupController {
     public Response<Boolean> setupBabyInfo(UserInfoReq userInfoReq, List<BabyInfoReq> babyInfoReqList) {
         userInfoService.updatePregancyInfo(userInfoReq);
         babyInfoService.updateBabyInfo(userInfoReq, babyInfoReqList);
+        lactationTodoService.initLactationTodo(HtmlUtil.getUserId());
         return Response.success(Boolean.TRUE);
     }
 

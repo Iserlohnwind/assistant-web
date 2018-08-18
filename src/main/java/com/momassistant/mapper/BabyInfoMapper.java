@@ -1,8 +1,10 @@
 package com.momassistant.mapper;
 
-import org.apache.ibatis.annotations.Insert;
+import com.momassistant.mapper.model.BabyInfo;
+import org.apache.ibatis.annotations.*;
 
 import java.util.Date;
+import java.util.List;
 
 public interface BabyInfoMapper {
 
@@ -11,4 +13,25 @@ public interface BabyInfoMapper {
                     "values (#{userId},#{babyName},#{babyGender},#{babyBirthday})"
     )
     void insertBabyInfo(int userId, String babyName, int babyGender, Date babyBirthday);
+
+
+    @Select("SELECT * FROM BabyInfo WHERE userId=#{userId}")
+    @Results({
+            @Result(property = "userId",  column = "userId"),
+            @Result(property = "babyId",  column = "id"),
+            @Result(property = "babyName",  column = "babyName"),
+            @Result(property = "babyBirthday",  column = "babyBirthday"),
+            @Result(property = "babyGender",  column = "babyGender"),
+    })
+    List<BabyInfo> findByUserId(@Param("userId") int userId);
+
+    @Select("SELECT * FROM BabyInfo WHERE userId=#{userId} and id=#{babyId}")
+    @Results({
+            @Result(property = "userId",  column = "userId"),
+            @Result(property = "babyId",  column = "id"),
+            @Result(property = "babyName",  column = "babyName"),
+            @Result(property = "babyBirthday",  column = "babyBirthday"),
+            @Result(property = "babyGender",  column = "babyGender"),
+    })
+    BabyInfo findByUserIdAndBabyId(@Param("userId") int userId, @Param("babyId") int babyId);
 }

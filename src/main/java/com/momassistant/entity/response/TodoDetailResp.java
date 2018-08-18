@@ -9,6 +9,6 @@ import java.util.List;
  * Created by zhufeng on 2018/8/17.
  */
 @Data
-public class UserGestationTodoDetailResp implements Serializable{
-    private List<GestationTodoDetailItem> detailItemList;
+public class TodoDetailResp implements Serializable{
+    private List<TodoDetailItem> detailItemList;
 }

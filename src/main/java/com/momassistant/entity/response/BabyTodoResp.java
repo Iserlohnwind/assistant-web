@@ -9,11 +9,13 @@ import java.util.List;
  * Created by zhufeng on 2018/8/17.
  */
 @Data
-public class UserLactationTodoResp implements Serializable{
+public class BabyTodoResp implements Serializable{
     /**
      * 提醒开关
      */
-    private int todoNotifySwitch;
+    private String babyName;
 
-    private List<BabyTodoResp> babyList;
+    private String birthDate;
+
+    private List<TodoItem> todoItemList;
 }

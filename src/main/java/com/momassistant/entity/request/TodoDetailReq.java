@@ -8,6 +8,6 @@ import java.io.Serializable;
  * Created by zhufeng on 2018/8/17.
  */
 @Data
-public class UserGestationTodoDetailReq implements Serializable{
+public class TodoDetailReq implements Serializable{
     private int typeId;
 }

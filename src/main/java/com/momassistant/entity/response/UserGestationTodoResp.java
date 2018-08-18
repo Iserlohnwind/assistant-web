@@ -20,5 +20,5 @@ public class UserGestationTodoResp implements Serializable{
      */
     private int todoNotifySwitch;
 
-    private List<GestationTodoItem> todoList;
+    private List<TodoItem> todoList;
 }

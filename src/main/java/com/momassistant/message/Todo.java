@@ -17,16 +17,15 @@ public class Todo{
     private String title;
     private String content;
 
-    public Todo(int userId) {
-        this.userId = userId;
+    public Todo() {
     }
 
-    public Todo(TodoLog todoLog, String openId) {
+    public Todo(TodoLog todoLog) {
         this.typeId = todoLog.getTypeId();
         this.userId = todoLog.getUserId();
         this.title = todoLog.getTitle();
         this.content = todoLog.getContent();
-        this.openId = openId;
+        this.openId = todoLog.getOpendId();
     }
 
     public Todo(int typeId, int userId, String openId, String title, List<TodoTypeDetail> todoTypeDetailList) {
@@ -88,19 +87,5 @@ public class Todo{
     public void setContent(String content) {
         this.content = content;
     }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
 
-        Todo todo = (Todo) o;
-
-        return userId == todo.userId;
-
-    }
-
-    @Override
-    public int hashCode() {
-        return userId;
-    }
 }

@@ -21,4 +21,8 @@ public class TodoLog implements Serializable{
     private Date sendTime;
     private int node;
 
+    private int babyId;
+    private String babyName;
+
+
 }

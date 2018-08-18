@@ -8,11 +8,11 @@ import java.io.Serializable;
  * Created by zhufeng on 2018/8/17.
  */
 @Data
-public class GestationTodoItem implements Serializable{
+public class TodoItem implements Serializable{
     /**
      * 产检日期
      */
-    private String birthInspectionDate;
+    private String todoDate;
 
     /**
      * 提醒标题

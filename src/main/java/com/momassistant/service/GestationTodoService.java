@@ -1,8 +1,8 @@
 package com.momassistant.service;
 
-import com.momassistant.entity.response.GestationTodoDetailItem;
-import com.momassistant.entity.response.GestationTodoItem;
-import com.momassistant.entity.response.UserGestationTodoDetailResp;
+import com.momassistant.entity.response.TodoDetailItem;
+import com.momassistant.entity.response.TodoItem;
+import com.momassistant.entity.response.TodoDetailResp;
 import com.momassistant.entity.response.UserGestationTodoResp;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
@@ -28,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -66,29 +65,29 @@ public class GestationTodoService {
         UserInfo userInfo = userInfoMapper.getUserDetail(userId);
         userGestationTodoResp.setEdcInterval(DateUtil.getIntervalOfCalendarDay(userInfo.getEdc() , new Date()));
         userGestationTodoResp.setTodoNotifySwitch(userInfo.getTodoNotifySwitch());
-        List<GestationTodoItem> gestationTodoItemList = new ArrayList<GestationTodoItem>();
+        List<TodoItem> todoItemList = new ArrayList<TodoItem>();
         TodoType currentTodoType = findLatestTodoType(userInfo.getEdc());
         while (currentTodoType != null) {
-            gestationTodoItemList.add(transferTodoTypeToItem(userInfo.getEdc(), currentTodoType));
+            todoItemList.add(transferTodoTypeToItem(userInfo.getEdc(), currentTodoType));
             currentTodoType = todoTypeMapper.findById(currentTodoType.getNextId());
         }
-        userGestationTodoResp.setTodoList(gestationTodoItemList);
+        userGestationTodoResp.setTodoList(todoItemList);
         return userGestationTodoResp;
     }
 
 
-    public UserGestationTodoDetailResp getGestationTodoDetail(int typeId) {
-        UserGestationTodoDetailResp userGestationTodoDetailResp = new UserGestationTodoDetailResp();
+    public TodoDetailResp getGestationTodoDetail(int typeId) {
+        TodoDetailResp todoDetailResp = new TodoDetailResp();
         List<TodoTypeDetail> typeDetailList = todoTypeDetailMapper.findByTypeId(typeId);
         if (!CollectionUtils.isEmpty(typeDetailList)) {
-            userGestationTodoDetailResp.setDetailItemList(typeDetailList.stream().map(typeDetail-> {
-                GestationTodoDetailItem gestationTodoDetailItem = new GestationTodoDetailItem();
-                gestationTodoDetailItem.setTitle(typeDetail.getTitle());
-                gestationTodoDetailItem.setContent(typeDetail.getContent());
-                return gestationTodoDetailItem;
+            todoDetailResp.setDetailItemList(typeDetailList.stream().map(typeDetail-> {
+                TodoDetailItem todoDetailItem = new TodoDetailItem();
+                todoDetailItem.setTitle(typeDetail.getTitle());
+                todoDetailItem.setContent(typeDetail.getContent());
+                return todoDetailItem;
             }).collect(Collectors.toList()));
         }
-        return userGestationTodoDetailResp;
+        return todoDetailResp;
     }
 
 
@@ -112,7 +111,7 @@ public class GestationTodoService {
     private void clearOldTodo(UserInfo userInfo) {
         GestationTodo gestationTodo = new GestationTodo(userInfo.getUserId());
         gestationTodoDelayedTask.endTask(new DelayedMessage(new Date(), gestationTodo));
-        todoLogMapper.deleteLog(userInfo.getUserId());
+        todoLogMapper.deleteLogByUserId(userInfo.getUserId());
     }
 
     private void createNewTodo(UserInfo userInfo) {
@@ -154,12 +153,12 @@ public class GestationTodoService {
     }
 
 
-    private GestationTodoItem transferTodoTypeToItem(Date edc, TodoType todoType) {
-        GestationTodoItem gestationTodoItem = new GestationTodoItem();
-        gestationTodoItem.setTypeId(todoType.getId());
+    private TodoItem transferTodoTypeToItem(Date edc, TodoType todoType) {
+        TodoItem todoItem = new TodoItem();
+        todoItem.setTypeId(todoType.getId());
         Date  birthInspectionDate = DateUtil.addDays(edc, -DAY_INTERVAL + todoType.getTodoDay());
-        gestationTodoItem.setBirthInspectionDate(DateUtil.format(birthInspectionDate));
-        gestationTodoItem.setTodoTitle(todoType.getTitle());
-        return gestationTodoItem;
+        todoItem.setTodoDate(DateUtil.format(birthInspectionDate));
+        todoItem.setTodoTitle(todoType.getTitle());
+        return todoItem;
     }
 }
