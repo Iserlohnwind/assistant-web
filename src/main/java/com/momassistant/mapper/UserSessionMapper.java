@@ -19,6 +19,6 @@ public interface UserSessionMapper {
     @Update(
             "update UserSession set token=#{userToken}, expireTime=#{expireTime} where userId=#{userId}"
     )
-    void updateToken(@Param("userId") int userId, @Param("userToken") String userToken, @Param("expiredTime") Date expiredTime);
+    void updateToken(@Param("userId") int userId, @Param("userToken") String userToken, @Param("expireTime") Date expiredTime);
 
 }

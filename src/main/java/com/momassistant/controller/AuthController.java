@@ -28,7 +28,7 @@ public class AuthController {
     @RequestMapping("/auth/login")
     public Response<LoginResp> login(LoginReq loginReq) {
         String openId = WechatAuthUtil.auth(loginReq.getCode());
-        if (StringUtils.isNotEmpty(openId)) {
+        if (StringUtils.isEmpty(openId)) {
             return Response.error(ReturnCode.LOGIN_FAILED);
         }
         int userId = userInfoService.getUserId(openId);

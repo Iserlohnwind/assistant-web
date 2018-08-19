@@ -33,8 +33,8 @@ public interface UserInfoMapper {
 
 
     @Insert("insert into UserInfo(openId) values(#{openId})")
-    @Options(useGeneratedKeys=true,keyProperty="id")
-    UserInfo createUser(UserInfo userInfo);
+    @Options(useGeneratedKeys=true,keyProperty="userId")
+    void createUser(UserInfo userInfo);
 
 
     @Update(
@@ -65,13 +65,21 @@ public interface UserInfoMapper {
                           @Param("userHeadPic") String userHeadPic);
 
     @Update("update UserInfo set userName=#{userName}, gender=#{gender}, mobile=#{mobile}, userRegion=#{userRegion}, " +
-            "edcDate=#{edcDate} where id=#{userId} ")
+            "edc=#{edcDate} where id=#{userId} ")
     void updatePregancyInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
                             @Param("gender") int gender,
-                            @Param("mobile") int mobile,
+                            @Param("mobile") String mobile,
                             @Param("userRegion") String userRegion,
                             @Param("edcDate") Date edcDate);
+
+
+    @Update("update UserInfo set userName=#{userName}, gender=#{gender}, mobile=#{mobile}, userRegion=#{userRegion} where id=#{userId} ")
+    void updateLactationInfo(@Param("userId") int userId,
+                            @Param("userName") String userName,
+                            @Param("gender") int gender,
+                            @Param("mobile") String mobile,
+                            @Param("userRegion") String userRegion);
 
 
 }

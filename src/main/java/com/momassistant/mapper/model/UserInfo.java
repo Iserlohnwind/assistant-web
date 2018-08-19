@@ -17,7 +17,7 @@ public class UserInfo implements Serializable{
     private String userHeadPic;
     private String userRegion;
     private int gender;
-    private int mobile;
+    private String mobile;
     private int userType;
     private Date edc;
     private int todoNotifySwitch;

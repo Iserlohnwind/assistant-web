@@ -6,7 +6,7 @@ package com.momassistant;
 public enum  ReturnCode {
     OK(200, "正常"),
     LOGIN_FAILED(500, ""),
-    TOKEN_EXPIRED(500, "token已经过期"),
+    TOKEN_EXPIRED(401, "token已经过期"),
     UKNOWN(500, "未知错误"),
 
     ;

@@ -9,6 +9,8 @@ import com.momassistant.entity.wechat.MsgItem;
 import com.momassistant.entity.wechat.WechatSendMsgReq;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.WechatMsgTemplate;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,6 +27,8 @@ import java.util.stream.Stream;
  * Created by zhufeng on 2018/8/14.
  */
 public class WechatAuthUtil {
+    protected static final Log logger = LogFactory.getLog(WechatAuthUtil.class);
+
     public static String auth(String code) {
         //微信的接口
         String url = String.format(WeixinConstant.AUTH_URL, code);
@@ -35,7 +39,7 @@ public class WechatAuthUtil {
         if(responseEntity != null && responseEntity.getStatusCode() == HttpStatus.OK)
         {
             String sessionData = responseEntity.getBody();
-
+            logger.info(sessionData);
             //解析从微信服务器获得的openid和session_key;
             WechatAuthResponse weixinAuthResponse = JSONObject.parseObject(sessionData, WechatAuthResponse.class);
             if (weixinAuthResponse.getErrcode() == null) {

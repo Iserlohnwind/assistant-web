@@ -1,10 +1,14 @@
 package com.momassistant.service;
 
+import com.momassistant.entity.request.SetupLactationInfoReq;
+import com.momassistant.entity.request.SetupPregancyInfoReq;
+import com.momassistant.entity.request.SetupWechatInfoReq;
 import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.UserSessionMapper;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.mapper.model.UserSession;
+import com.momassistant.utils.HtmlUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -26,7 +30,7 @@ public class UserInfoService {
         UserInfo userInfo = new UserInfo();
         BeanUtils.copyProperties(userInfoReq, userInfo);
         userInfoMapper.updateUserDetail(userInfo);
-        return userInfoMapper.getUserDetail(userInfoReq.getUserId());
+        return userInfoMapper.getUserDetail(HtmlUtil.getUserId());
     }
 
     public int getUserId(String openId) {
@@ -64,22 +68,32 @@ public class UserInfoService {
         return false;
     }
 
-    public void updateUserWechatInfo(UserInfoReq userInfoReq) {
+    public void updateUserWechatInfo(SetupWechatInfoReq userInfoReq) {
         userInfoMapper.updateUserWechat(
-                userInfoReq.getUserId(),
+                HtmlUtil.getUserId(),
                 userInfoReq.getWechatName(),
                 userInfoReq.getUserHeadPic()
         );
     }
 
-    public void updatePregancyInfo(UserInfoReq userInfoReq) {
+    public void updatePregancyInfo(SetupPregancyInfoReq userInfoReq) {
         userInfoMapper.updatePregancyInfo(
-                userInfoReq.getUserId(),
+                HtmlUtil.getUserId(),
                 userInfoReq.getUserName(),
                 2,
                 userInfoReq.getMobile(),
                 userInfoReq.getUserRegion(),
                 userInfoReq.getEdc()
+        );
+    }
+
+    public void updateLactationInfo(SetupLactationInfoReq setupLactationInfoReq) {
+        userInfoMapper.updateLactationInfo(
+                HtmlUtil.getUserId(),
+                setupLactationInfoReq.getUserName(),
+                2,
+                setupLactationInfoReq.getMobile(),
+                setupLactationInfoReq.getUserRegion()
         );
     }
 }

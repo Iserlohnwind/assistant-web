@@ -32,14 +32,14 @@ public interface TodoLogMapper {
     @Options(useGeneratedKeys=true,keyProperty="id")
     void insertLog(TodoLog todoLog);
 
-    @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},dataJson=#{dataJson},url=#{url} WEHRE userId=#{userId}")
+    @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},dataJson=#{dataJson},url=#{url} WHERE userId=#{userId}")
     void updateLog(TodoLog todoLog);
 
 
-    @Delete("DELETE FROM TodoLog  WEHRE userId=#{userId}")
+    @Delete("DELETE FROM TodoLog  WHERE userId=#{userId}")
     void deleteLogByUserId(@Param("userId")int userId);
 
-    @Delete("DELETE FROM TodoLog  WEHRE babyId=#{babyId}")
+    @Delete("DELETE FROM TodoLog  WHERE babyId=#{babyId}")
     void deleteLogByBabyId(@Param("babyId")int babyId);
 
 }
