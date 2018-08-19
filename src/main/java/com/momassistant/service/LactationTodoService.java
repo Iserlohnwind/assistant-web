@@ -154,7 +154,7 @@ public class LactationTodoService {
         //新提醒入库
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
-        todoLog.setOpendId(todo.getOpenId());
+        todoLog.setOpenId(todo.getOpenId());
         todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);

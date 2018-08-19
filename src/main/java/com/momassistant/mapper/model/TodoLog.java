@@ -12,7 +12,7 @@ import java.util.Date;
 public class TodoLog implements Serializable{
     private int id;
     private int userId;
-    private String opendId;
+    private String openId;
     private int typeId;
     private int mainTypeId;
     private String dataJson;

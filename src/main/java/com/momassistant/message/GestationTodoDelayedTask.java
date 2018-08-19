@@ -8,8 +8,6 @@ import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.mapper.model.TodoType;
-import com.momassistant.mapper.model.TodoTypeDetail;
-import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.utils.DateUtil;
 import com.momassistant.utils.WechatAuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +90,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         //新提醒入库
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
-        todoLog.setOpendId(todo.getOpenId());
+        todoLog.setOpenId(todo.getOpenId());
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

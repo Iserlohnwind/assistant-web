@@ -1,11 +1,7 @@
 package com.momassistant.message;
 
 import com.momassistant.mapper.model.TodoLog;
-import com.momassistant.mapper.model.TodoTypeDetail;
-import lombok.Data;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +20,7 @@ public class Todo{
     public Todo(TodoLog todoLog) {
         this.typeId = todoLog.getTypeId();
         this.userId = todoLog.getUserId();
-        this.openId = todoLog.getOpendId();
+        this.openId = todoLog.getOpenId();
     }
 
     public Todo(int typeId, int userId, String openId, Map<String, String> data) {

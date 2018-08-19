@@ -1,6 +1,7 @@
 package com.momassistant.entity.request;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -10,6 +11,7 @@ import java.util.Date;
 @Data
 public class BabyInfoReq {
     private String babyName;
+    @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date babyBirthday;
     private int babyGender;
 }

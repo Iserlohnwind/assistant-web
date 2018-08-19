@@ -93,7 +93,7 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
         //新提醒入库
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
-        todoLog.setOpendId(todo.getOpenId());
+        todoLog.setOpenId(todo.getOpenId());
         todoLog.setBabyId(babyInfo.getBabyId());
         todoLog.setBabyName(babyInfo.getBabyName());
         todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
