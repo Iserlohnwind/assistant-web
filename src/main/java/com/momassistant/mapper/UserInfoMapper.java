@@ -32,7 +32,7 @@ public interface UserInfoMapper {
 
 
 
-    @Insert("insert into UserInfo(openId,createTime) values(#{openId}, now())")
+    @Insert("insert into UserInfo(openId) values(#{openId})")
     @Options(useGeneratedKeys=true,keyProperty="id")
     UserInfo createUser(UserInfo userInfo);
 
