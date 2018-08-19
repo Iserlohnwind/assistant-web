@@ -40,8 +40,8 @@ public class UserInfoController {
     LactationTodoService lactationTodoService;
 
 
-    @ApiOperation(value = "根据userid查询用户信息", notes = "根据userid查询用户信息")
-    @RequestMapping("getUserInfo")
+    @ApiOperation(value = "根据userid查询用户信息", notes = "根据userid查询用户信息", httpMethod = "GET")
+    @RequestMapping(value = "getUserInfo", method = RequestMethod.GET)
     @UserValidate
     public Response<UserInfo> getUserInfo() {
         return Response.success(userInfoService.getUserDetail(HtmlUtil.getUserId()));

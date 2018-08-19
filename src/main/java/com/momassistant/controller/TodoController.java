@@ -62,8 +62,8 @@ public class TodoController {
     @ApiImplicitParam(name = "updateTodoNotifySwitchReq", value = "提醒开关更新请求实体", required = true, dataType = "UpdateTodoNotifySwitchReq")
     @RequestMapping(value = "/todo/updateTodoNotifySwitch", method = RequestMethod.POST)
     @UserValidate
-    public Response<Boolean> updateTodoNotifySwitch(@RequestBody UpdateTodoNotifySwitchReq req) {
-        if (req.getTodoNotifySwitch() == TodoNotifySwitch.ON.getVal()) {
+    public Response<Boolean> updateTodoNotifySwitch(@RequestBody UpdateTodoNotifySwitchReq updateTodoNotifySwitchReq) {
+        if (updateTodoNotifySwitchReq.getTodoNotifySwitch() == TodoNotifySwitch.ON.getVal()) {
             gestationTodoService.notifyOn(HtmlUtil.getUserId());
         } else {
             gestationTodoService.notifyOff(HtmlUtil.getUserId());
