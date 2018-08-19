@@ -11,7 +11,7 @@ import java.util.Date;
 @Mapper
 public interface UserInfoMapper {
     @Select("SELECT id FROM UserInfo WHERE openId = #{openId}")
-    int getUserId(@Param("openId") String openId);
+    Integer getUserId(@Param("openId") String openId);
 
 
     @Select("SELECT * FROM UserInfo WHERE id = #{userId}")

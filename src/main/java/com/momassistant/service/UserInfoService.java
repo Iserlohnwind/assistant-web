@@ -30,8 +30,8 @@ public class UserInfoService {
     }
 
     public int getUserId(String openId) {
-        int userId = userInfoMapper.getUserId(openId);
-        if (userId <= 0) {
+        Integer userId = userInfoMapper.getUserId(openId);
+        if (userId == null) {
             UserInfo userInfo = new UserInfo();
             userInfo.setOpenId(openId);
             try {
@@ -41,7 +41,7 @@ public class UserInfoService {
                 userId = userInfoMapper.getUserId(openId);
             }
         }
-        return userId;
+        return userId != null ? userId : 0;
     }
 
     public UserInfo getUserDetail(int userId) {
