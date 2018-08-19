@@ -21,19 +21,18 @@ public interface TodoLogMapper {
             @Result(property = "babyId",  column = "babyId"),
             @Result(property = "babyName",  column = "babyName"),
             @Result(property = "sendTime",  column = "sendTime"),
-            @Result(property = "title",  column = "title"),
-            @Result(property = "content",  column = "content"),
+            @Result(property = "dataJson",  column = "dataJson"),
             @Result(property = "url",  column = "url"),
 
     })
     List<TodoLog> paginateLogs(@Param("minId") int minId, @Param("mainTypeId") int mainTypeId);
 
 
-    @Insert("INSERT INTO TodoLog(userId, openId, babyId, babyName, typeId, mainTypeId, title, content, url, sendTime) VALUES(#{userId},#{openId},#{babyId},#{babyName},#{typeId},#{mainTypeId}, #{title},#{content},#{url}, #{sendTime})")
+    @Insert("INSERT INTO TodoLog(userId, openId, babyId, babyName, typeId, mainTypeId, dataJson, url, sendTime) VALUES(#{userId},#{openId},#{babyId},#{babyName},#{typeId},#{mainTypeId}, #{dataJson}, #{url}, #{sendTime})")
     @Options(useGeneratedKeys=true,keyProperty="id")
     void insertLog(TodoLog todoLog);
 
-    @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},title=#{title},content=#{content},url=#{url} WEHRE userId=#{userId}")
+    @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},dataJson=#{dataJson},url=#{url} WEHRE userId=#{userId}")
     void updateLog(TodoLog todoLog);
 
 

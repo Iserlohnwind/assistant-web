@@ -11,4 +11,5 @@ import java.io.Serializable;
 public class TodoDetailItem implements Serializable{
     private String title;
     private String content;
+    private String keyword;
 }

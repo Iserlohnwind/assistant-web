@@ -15,8 +15,7 @@ public class TodoLog implements Serializable{
     private String opendId;
     private int typeId;
     private int mainTypeId;
-    private String title;
-    private String content;
+    private String dataJson;
     private String url;
     private Date sendTime;
     private int node;

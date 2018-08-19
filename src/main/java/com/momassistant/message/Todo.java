@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhufeng on 2018/8/15.
@@ -14,8 +15,8 @@ public class Todo{
     private int typeId;
     private int userId;
     private String openId;
-    private String title;
-    private String content;
+    private Map<String, String> data;
+
 
     public Todo() {
     }
@@ -23,29 +24,15 @@ public class Todo{
     public Todo(TodoLog todoLog) {
         this.typeId = todoLog.getTypeId();
         this.userId = todoLog.getUserId();
-        this.title = todoLog.getTitle();
-        this.content = todoLog.getContent();
         this.openId = todoLog.getOpendId();
     }
 
-    public Todo(int typeId, int userId, String openId, String title, List<TodoTypeDetail> todoTypeDetailList) {
+    public Todo(int typeId, int userId, String openId, Map<String, String> data) {
         this.typeId = typeId;
         this.userId = userId;
         this.openId = openId;
-        this.title = title;
-        StringBuilder contentSb = new StringBuilder();
-        for (TodoTypeDetail todoTypeDetail : todoTypeDetailList) {
-            contentSb.append(todoTypeDetail.getTitle()).append("\n").append(todoTypeDetail.getContent()).append("\n");
-        }
+        this.data = data;
 
-    }
-    @Override
-    public String toString() {
-        return "Todo{" +
-                "openId='" + openId + '\'' +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                '}';
     }
 
     public int getTypeId() {
@@ -72,20 +59,11 @@ public class Todo{
         this.openId = openId;
     }
 
-    public String getTitle() {
-        return title;
+    public Map<String, String> getData() {
+        return data;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setData(Map<String, String> data) {
+        this.data = data;
     }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
 }

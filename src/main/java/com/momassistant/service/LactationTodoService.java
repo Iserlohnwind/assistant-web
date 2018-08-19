@@ -1,5 +1,6 @@
 package com.momassistant.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.momassistant.entity.response.*;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
@@ -13,9 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -121,8 +120,18 @@ public class LactationTodoService {
         TodoType todoType = findLatestTodoType(babyInfo.getBabyBirthday());
         if (todoType != null) {
             List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
-            LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), todoType.getTitle(), todoTypeDetailList, babyInfo);
+
+
+            Map<String, String> data = new HashMap<>();
             Date sendTime = calSendTime(babyInfo.getBabyBirthday(), todoType);
+            data.put("first", "尊敬的家长,您好!您的孩子今日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!");
+            data.put("keyword1", String.format("姓名：%s", babyInfo.getBabyName()));
+            data.put("keyword2", String.format("性别：%s", babyInfo.getBabyGender()));
+            data.put("keyword3", DateUtil.format(sendTime));
+            data.put("keyword4", String.format("计划接种疫苗：%s", "xx"));
+            data.put("remark", "注意事项：%s");
+
+            LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), data, babyInfo);
             TodoLog todoLog = createTodoLog(sendTime, todo);
             todoLogMapper.insertLog(todoLog);
             lactationTodoDelayedTask.put(sendTime, todo);
@@ -146,8 +155,7 @@ public class LactationTodoService {
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpendId(todo.getOpenId());
-        todoLog.setTitle(todo.getTitle());
-        todoLog.setContent(todo.getContent());
+        todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

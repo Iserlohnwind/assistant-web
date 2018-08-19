@@ -1,5 +1,6 @@
 package com.momassistant.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.momassistant.entity.response.TodoDetailItem;
 import com.momassistant.entity.response.TodoItem;
 import com.momassistant.entity.response.TodoDetailResp;
@@ -25,9 +26,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +34,7 @@ import java.util.stream.Collectors;
  */
 @Service
 public class GestationTodoService {
+    private static final String FIRST_TEMPLATE = "亲爱的准妈妈,%s天后您将进行%s";
     private static final int DAY_INTERVAL = 280;
     @Autowired
     private TodoTypeMapper todoTypeMapper;
@@ -118,8 +118,15 @@ public class GestationTodoService {
         TodoType todoType = findLatestTodoType(userInfo.getEdc());
         if (todoType != null) {
             List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
-            GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), todoType.getTitle(), todoTypeDetailList);
+            Map<String, String> data = new HashMap<>();
             Date sendTime = calSendTime(userInfo.getEdc(), todoType);
+            int timeRemaining = DateUtil.getIntervalOfCalendarDay(sendTime, new Date());
+            data.put("first", String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()));
+            data.put("keyword1", DateUtil.format(sendTime));
+            data.put("keyword2", "xxxx");
+            data.put("remark", "点击查看本次产检更多注意事项吧~");
+
+            GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), data);
             TodoLog todoLog = createTodoLog(sendTime, todo);
             todoLogMapper.insertLog(todoLog);
             gestationTodoDelayedTask.put(sendTime, todo);
@@ -144,8 +151,7 @@ public class GestationTodoService {
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpendId(todo.getOpenId());
-        todoLog.setTitle(todo.getTitle());
-        todoLog.setContent(todo.getContent());
+        todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

@@ -11,12 +11,15 @@ import com.momassistant.mapper.model.TodoType;
 import com.momassistant.mapper.model.TodoTypeDetail;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.utils.DateUtil;
+import com.momassistant.utils.WechatAuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhufeng on 2018/8/16.
@@ -24,6 +27,8 @@ import java.util.List;
  */
 @Component("gestationTodoDelayedTask")
 public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
+    private static final String FIRST_TEMPLATE = "亲爱的准妈妈,%s天后您将进行%s";
+
     @Autowired
     private TodoTypeMapper todoTypeMapper;
     @Autowired
@@ -54,6 +59,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
                 if (checkTodoNotifySwitchOn(todo.getUserId())){
                     //发送过程，暂未实现
                     //....
+                    WechatAuthUtil.sendMsg(TodoMainType.GESTATION, todo.getOpenId(), todo.getData());
                 }
                 //新建下一个提醒,存入队列
                 createNextTodo(todo);
@@ -68,9 +74,14 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
 
     private void createNextTodo(GestationTodo oldTodo) {
         TodoType todoType = todoTypeMapper.findByPreId(oldTodo.getTypeId());
-        List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
-        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), todoType.getTitle(), todoTypeDetailList);
+        Map<String, String> data = new HashMap<>();
         Date sendTime = calSendTime(oldTodo.getUserId(), todoType);
+        int timeRemaining = DateUtil.getIntervalOfCalendarDay(sendTime, new Date());
+        data.put("first", String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()));
+        data.put("keyword1", DateUtil.format(sendTime));
+        data.put("keyword2", "xxxx");
+        data.put("remark", "点击查看本次产检更多注意事项吧~");
+        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), data);
         put(sendTime, newTodo);
         TodoLog todoLog = new TodoLog();
         createTodoLog(sendTime, newTodo);
@@ -82,8 +93,6 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpendId(todo.getOpenId());
-        todoLog.setTitle(todo.getTitle());
-        todoLog.setContent(todo.getContent());
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

@@ -5,6 +5,7 @@ import com.momassistant.mapper.model.TodoTypeDetail;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhufeng on 2018/8/16.
@@ -21,8 +22,8 @@ public class GestationTodo extends Todo{
         this.setUserId(userId);
     }
 
-    public GestationTodo(int typeId, int userId, String openId, String title, List<TodoTypeDetail> todoTypeDetailList) {
-        super(typeId, userId, openId, title, todoTypeDetailList);
+    public GestationTodo(int typeId, int userId, String openId, Map<String, String> data) {
+        super(typeId, userId, openId, data);
     }
 
 
