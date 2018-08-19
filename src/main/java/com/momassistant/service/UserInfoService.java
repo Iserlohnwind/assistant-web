@@ -3,7 +3,6 @@ package com.momassistant.service;
 import com.momassistant.entity.request.SetupLactationInfoReq;
 import com.momassistant.entity.request.SetupPregancyInfoReq;
 import com.momassistant.entity.request.SetupWechatInfoReq;
-import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.UserSessionMapper;
 import com.momassistant.mapper.model.UserInfo;
@@ -25,13 +24,6 @@ public class UserInfoService {
     private UserInfoMapper userInfoMapper;
     @Autowired
     private UserSessionMapper userSessionMapper;
-
-    public UserInfo updateUserInfo(UserInfoReq userInfoReq) {
-        UserInfo userInfo = new UserInfo();
-        BeanUtils.copyProperties(userInfoReq, userInfo);
-        userInfoMapper.updateUserDetail(userInfo);
-        return userInfoMapper.getUserDetail(HtmlUtil.getUserId());
-    }
 
     public int getUserId(String openId) {
         Integer userId = userInfoMapper.getUserId(openId);

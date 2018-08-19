@@ -1,7 +1,6 @@
 package com.momassistant.service;
 
 import com.momassistant.entity.request.BabyInfoReq;
-import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.mapper.BabyInfoMapper;
 import com.momassistant.utils.HtmlUtil;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,7 +2,6 @@ package com.momassistant.controller;
 
 import com.momassistant.annotations.UserValidate;
 import com.momassistant.entity.Response;
-import com.momassistant.entity.request.UserInfoReq;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.service.UserInfoService;
 import com.momassistant.utils.HtmlUtil;
