@@ -19,16 +19,14 @@ public interface TodoLogMapper {
             @Result(property = "openId",  column = "openId"),
             @Result(property = "typeId",  column = "typeId"),
             @Result(property = "babyId",  column = "babyId"),
-            @Result(property = "babyName",  column = "babyName"),
             @Result(property = "sendTime",  column = "sendTime"),
             @Result(property = "dataJson",  column = "dataJson"),
-            @Result(property = "url",  column = "url"),
-
+            @Result(property = "url",  column = "url")
     })
     List<TodoLog> paginateLogs(@Param("minId") int minId, @Param("mainTypeId") int mainTypeId);
 
 
-    @Insert("INSERT INTO TodoLog(userId, openId, babyId, babyName, typeId, mainTypeId, dataJson, url, sendTime) VALUES(#{userId},#{openId},#{babyId},#{babyName},#{typeId},#{mainTypeId}, #{dataJson}, #{url}, #{sendTime})")
+    @Insert("INSERT INTO TodoLog(userId, openId, babyId, typeId, mainTypeId, dataJson, url, sendTime) VALUES(#{userId},#{openId},#{babyId},#{typeId},#{mainTypeId}, #{dataJson}, #{url}, #{sendTime})")
     @Options(useGeneratedKeys=true,keyProperty="id")
     void insertLog(TodoLog todoLog);
 

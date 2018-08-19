@@ -21,7 +21,6 @@ public interface UserInfoMapper {
             @Result(property = "userName",  column = "userName"),
             @Result(property = "userHeadPic",  column = "userHeadPic"),
             @Result(property = "userRegion",  column = "userRegion"),
-            @Result(property = "gender",  column = "gender"),
             @Result(property = "mobile",  column = "mobile"),
             @Result(property = "userType",  column = "userType"),
             @Result(property = "edc",  column = "edc"),
@@ -39,7 +38,7 @@ public interface UserInfoMapper {
 
     @Update(
             "update UserInfo set wechatName=#{wechatName}, userName=#{userName},userHeadPic=#{userHeadPic}," +
-                    "userRegion=#{userRegion},gender=#{gender},mobile=#{mobile},userType=#{userType},edc=#{edc}" +
+                    "userRegion=#{userRegion},mobile=#{mobile},userType=#{userType},edc=#{edc}" +
                     " where id=#{userId}"
     )
     void updateUserDetail(UserInfo userInfo);
@@ -64,20 +63,18 @@ public interface UserInfoMapper {
                           @Param("wechatName") String wechatName,
                           @Param("userHeadPic") String userHeadPic);
 
-    @Update("update UserInfo set userName=#{userName}, gender=#{gender}, mobile=#{mobile}, userRegion=#{userRegion}, " +
+    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion}, " +
             "edc=#{edcDate} where id=#{userId} ")
     void updatePregancyInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
-                            @Param("gender") int gender,
                             @Param("mobile") String mobile,
                             @Param("userRegion") String userRegion,
                             @Param("edcDate") Date edcDate);
 
 
-    @Update("update UserInfo set userName=#{userName}, gender=#{gender}, mobile=#{mobile}, userRegion=#{userRegion} where id=#{userId} ")
+    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion} where id=#{userId} ")
     void updateLactationInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
-                            @Param("gender") int gender,
                             @Param("mobile") String mobile,
                             @Param("userRegion") String userRegion);
 

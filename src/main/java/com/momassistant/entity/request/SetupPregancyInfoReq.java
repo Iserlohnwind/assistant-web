@@ -13,7 +13,6 @@ import java.util.Date;
 public class SetupPregancyInfoReq implements Serializable {
     private String userName;
     private String userRegion;
-    private int gender;
     private String mobile;
 
     private int userType;

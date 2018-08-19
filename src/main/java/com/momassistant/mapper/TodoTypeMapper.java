@@ -30,7 +30,7 @@ public interface TodoTypeMapper {
     })
     TodoType findByPreId(@Param("preId") int preId);
 
-    @Select("SELECT * FROM TodoType WHERE mainType = #{mainType} and todoDay >= #{minTodoDay} ORDER BY todoDay asc LIMIT 1")
+    @Select("SELECT * FROM TodoType WHERE mainType = #{mainType} and todoDay > #{minTodoDay} ORDER BY todoDay asc LIMIT 1")
     @Results({
             @Result(property = "id",  column = "id"),
             @Result(property = "nextId",  column = "nextId"),

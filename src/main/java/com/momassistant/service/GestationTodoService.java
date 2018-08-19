@@ -119,17 +119,18 @@ public class GestationTodoService {
         if (todoType != null) {
             List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
             Map<String, String> data = new HashMap<>();
-            Date sendTime = calSendTime(userInfo.getEdc(), todoType);
-            int timeRemaining = DateUtil.getIntervalOfCalendarDay(sendTime, new Date());
+            Date todoDate = caculateTodoDate(userInfo.getEdc(), todoType);
+            Date sendDate = caculateSendDate(todoDate);
+            int timeRemaining = DateUtil.getIntervalOfCalendarDay(todoDate, new Date());
             data.put("first", String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()));
-            data.put("keyword1", DateUtil.format(sendTime));
+            data.put("keyword1", DateUtil.format(todoDate));
             data.put("keyword2", "xxxx");
             data.put("remark", "点击查看本次产检更多注意事项吧~");
 
             GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), data);
-            TodoLog todoLog = createTodoLog(sendTime, todo);
+            TodoLog todoLog = createTodoLog(sendDate, todo);
             todoLogMapper.insertLog(todoLog);
-            gestationTodoDelayedTask.put(sendTime, todo);
+            gestationTodoDelayedTask.put(sendDate, todo);
         }
     }
 
@@ -140,9 +141,18 @@ public class GestationTodoService {
         return todoType;
     }
 
-    private Date calSendTime(Date edc, TodoType todoType) {
-        Date sendTime = DateUtil.addDays(edc, todoType.getTodoDay());
+    private Date caculateTodoDate(Date edc, TodoType todoType) {
+        Date sendTime = DateUtil.addDays(edc, -DAY_INTERVAL + todoType.getTodoDay());
         return sendTime;
+    }
+
+    private Date caculateSendDate(Date todoDate) {
+        Date sendDate = DateUtil.addDays(todoDate, 6);
+        Date now = new Date();
+        while (sendDate.before(now)) {
+            sendDate = DateUtil.addDays(sendDate, 1);
+        }
+        return sendDate;
     }
 
 
@@ -152,6 +162,7 @@ public class GestationTodoService {
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpenId(todo.getOpenId());
         todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
+        todoLog.setUrl("");
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

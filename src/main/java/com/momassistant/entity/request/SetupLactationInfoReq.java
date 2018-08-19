@@ -14,7 +14,6 @@ import java.util.List;
 public class SetupLactationInfoReq implements Serializable {
     private String userName;
     private String userRegion;
-    private int gender;
     private String mobile;
     private int userType;
 

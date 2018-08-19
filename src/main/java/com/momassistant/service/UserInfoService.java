@@ -8,7 +8,6 @@ import com.momassistant.mapper.UserSessionMapper;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.mapper.model.UserSession;
 import com.momassistant.utils.HtmlUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -72,7 +71,6 @@ public class UserInfoService {
         userInfoMapper.updatePregancyInfo(
                 HtmlUtil.getUserId(),
                 userInfoReq.getUserName(),
-                2,
                 userInfoReq.getMobile(),
                 userInfoReq.getUserRegion(),
                 userInfoReq.getEdc()
@@ -83,7 +81,6 @@ public class UserInfoService {
         userInfoMapper.updateLactationInfo(
                 HtmlUtil.getUserId(),
                 setupLactationInfoReq.getUserName(),
-                2,
                 setupLactationInfoReq.getMobile(),
                 setupLactationInfoReq.getUserRegion()
         );

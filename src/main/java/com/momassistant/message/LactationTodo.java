@@ -31,7 +31,6 @@ public class LactationTodo extends Todo {
     public LactationTodo(TodoLog todoLog) {
         super(todoLog);
         this.babyId = todoLog.getBabyId();
-        this.babyName = todoLog.getBabyName();
     }
 
 

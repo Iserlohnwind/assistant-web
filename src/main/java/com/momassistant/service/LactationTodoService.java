@@ -156,6 +156,7 @@ public class LactationTodoService {
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpenId(todo.getOpenId());
         todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
+        todoLog.setUrl("");
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
         todoLog.setMainTypeId(TodoMainType.GESTATION.getType());

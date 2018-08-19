@@ -95,7 +95,6 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpenId(todo.getOpenId());
         todoLog.setBabyId(babyInfo.getBabyId());
-        todoLog.setBabyName(babyInfo.getBabyName());
         todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendTime);
