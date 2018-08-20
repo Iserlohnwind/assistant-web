@@ -15,7 +15,8 @@ public interface TodoTypeDetailMapper {
     @Results({
             @Result(property = "id",  column = "id"),
             @Result(property = "title",  column = "title"),
-            @Result(property = "content",  column = "content")
+            @Result(property = "content",  column = "content"),
+            @Result(property = "keyword",  column = "keyword")
     })
     List<TodoTypeDetail> findByTypeId(@Param("typeId") int typeId);
 }

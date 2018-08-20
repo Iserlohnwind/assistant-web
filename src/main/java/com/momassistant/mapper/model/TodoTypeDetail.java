@@ -13,4 +13,5 @@ public class TodoTypeDetail implements Serializable{
     private int typeId;
     private String title;
     private String content;
+    private String keyword;
 }

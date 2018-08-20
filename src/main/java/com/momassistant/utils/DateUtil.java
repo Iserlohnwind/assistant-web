@@ -24,9 +24,32 @@ public class DateUtil {
         return toConvert.convertToDate();
     }
 
+    public static Date addMonths(Date from, int days) {
+        JDateTime toConvert = new JDateTime(from);
+        toConvert.addMonth(days);
+        return toConvert.convertToDate();
+    }
+
+
+    public static int getBabyMonthDiff(Date birthDay) {
+        int diff = 0;
+        JDateTime birthJDateTime = new JDateTime(birthDay);
+        JDateTime nowJDateTime = new JDateTime(new Date());
+        diff += (nowJDateTime.getYear() - birthJDateTime.getYear()) * 12;
+        diff += nowJDateTime.getMonth() - birthJDateTime.getMonth();
+        if (nowJDateTime.getDay() < birthJDateTime.getDay()) {
+            diff -= 1;
+        }
+        return diff;
+    }
+
     public static String format(Date date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DATE_FORMAT_TEMPLATE);
         return simpleDateFormat.format(date);
+    }
+
+    public static boolean lessThan24Hour(Date date) {
+        return new Date().getTime() - date.getTime() < 24 * 3600 * 1000;
     }
 
 
@@ -49,4 +72,7 @@ public class DateUtil {
         calendar.set(Calendar.SECOND, 0);
 
     }
-}
+
+
+
+ }

@@ -12,7 +12,7 @@ public interface BabyInfoMapper {
             "insert into BabyInfo(userId,babyName,babyGender,babyBirthday) " +
                     "values (#{userId},#{babyName},#{babyGender},#{babyBirthday})"
     )
-    void insertBabyInfo(int userId, String babyName, int babyGender, Date babyBirthday);
+    void insertBabyInfo(@Param("userId")int userId, @Param("babyName")String babyName, @Param("babyGender") int babyGender, @Param("babyBirthday") Date babyBirthday);
 
 
     @Select("SELECT * FROM BabyInfo WHERE userId=#{userId}")

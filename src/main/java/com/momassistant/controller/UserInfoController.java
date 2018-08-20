@@ -96,4 +96,30 @@ public class UserInfoController {
         lactationTodoService.initLactationTodo(HtmlUtil.getUserId());
         return Response.success(Boolean.TRUE);
     }
+
+
+    public static void main(String[] args) {
+        String sql = "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
+                "VALUES\n" +
+                "\t(%s, '接种项目', '', '');\n" +
+                "\t\n" +
+                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
+                "VALUES\n" +
+                "\t(%s, '接种时间', '', '');\n" +
+                "\t\n" +
+                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
+                "VALUES\n" +
+                "\t(%s, '可预防的传染病', '', '');\n" +
+                "\t\n" +
+                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
+                "VALUES\n" +
+                "\t(%s, '注意事项', '', 'remark');\n" +
+                "\t\n" +
+                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
+                "VALUES\n" +
+                "\t(%s, '免疫程序', '', '');";
+        for (int i = 17;i<=35;i++) {
+            System.out.println(String.format(sql, i,i,i,i,i));
+        }
+    }
 }

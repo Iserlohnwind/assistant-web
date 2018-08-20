@@ -10,6 +10,7 @@ import com.momassistant.entity.response.TodoDetailResp;
 import com.momassistant.entity.response.UserGestationTodoResp;
 import com.momassistant.entity.response.UserLactationTodoResp;
 import com.momassistant.enums.TodoNotifySwitch;
+import com.momassistant.service.CommonTodoService;
 import com.momassistant.service.GestationTodoService;
 import com.momassistant.service.LactationTodoService;
 import com.momassistant.utils.HtmlUtil;
@@ -33,6 +34,8 @@ public class TodoController {
     private GestationTodoService gestationTodoService;
     @Autowired
     private LactationTodoService lactationTodoService;
+    @Autowired
+    private CommonTodoService commonTodoService;
 
     @ApiOperation(value = "获得产检todo列表", notes = "获得产检todo列表", httpMethod = "GET")
     @ApiImplicitParam(name = "userInfoReq", value = "用户详细实体user", required = true, dataType = "SetupWechatInfoReq")
@@ -46,12 +49,12 @@ public class TodoController {
     @ApiImplicitParam(name = "typeId", value = "todo类型id", required = true, dataType = "int")
     @RequestMapping(value = "/todo/getTodoDetail", method = RequestMethod.GET)
     @UserValidate
-    public Response<TodoDetailResp> getGestationTodoDetail(int typeId) {
-        return Response.success(gestationTodoService.getGestationTodoDetail(typeId));
+    public Response<TodoDetailResp> getTodoDetail(int typeId) {
+        return Response.success(commonTodoService.getTodoDetail(typeId));
     }
 
 
-    @ApiOperation(value = "获得某条产检todo详情", notes = "获得某条产检todo详情", httpMethod = "GET")
+    @ApiOperation(value = "获得疫苗接种todo列表", notes = "获得疫苗接种todo列表", httpMethod = "GET")
     @RequestMapping(value = "/todo/getLactationTodoList", method = RequestMethod.GET)
     @UserValidate
     public Response<UserLactationTodoResp> getLactationTodoList() {
@@ -64,9 +67,9 @@ public class TodoController {
     @UserValidate
     public Response<Boolean> updateTodoNotifySwitch(@RequestBody UpdateTodoNotifySwitchReq updateTodoNotifySwitchReq) {
         if (updateTodoNotifySwitchReq.getTodoNotifySwitch() == TodoNotifySwitch.ON.getVal()) {
-            gestationTodoService.notifyOn(HtmlUtil.getUserId());
+            commonTodoService.notifyOn(HtmlUtil.getUserId());
         } else {
-            gestationTodoService.notifyOff(HtmlUtil.getUserId());
+            commonTodoService.notifyOff(HtmlUtil.getUserId());
         }
         return Response.success(Boolean.TRUE);
     }

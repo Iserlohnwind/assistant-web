@@ -10,34 +10,29 @@ import org.apache.ibatis.annotations.*;
 @Mapper
 public interface TodoTypeMapper {
     @Select("SELECT * FROM TodoType WHERE id = #{typeId}")
-    @Results({
+    @Results(id = "todoType", value = {
             @Result(property = "id",  column = "id"),
             @Result(property = "nextId",  column = "nextId"),
             @Result(property = "preId",  column = "preId"),
             @Result(property = "title",  column = "title"),
+            @Result(property = "todoWeek",  column = "todoWeek"),
+            @Result(property = "todoMonth",  column = "todoMonth"),
             @Result(property = "mainType",  column = "mainType"),
     })
     TodoType findById(@Param("typeId") int typeId);
 
     @Select("SELECT * FROM TodoType WHERE preId = #{preId}")
-    @Results({
-            @Result(property = "id",  column = "id"),
-            @Result(property = "nextId",  column = "nextId"),
-            @Result(property = "preId",  column = "preId"),
-            @Result(property = "title",  column = "title"),
-            @Result(property = "todoDay",  column = "todoDay"),
-            @Result(property = "mainType",  column = "mainType"),
-    })
+    @ResultMap("todoType")
     TodoType findByPreId(@Param("preId") int preId);
 
-    @Select("SELECT * FROM TodoType WHERE mainType = #{mainType} and todoDay > #{minTodoDay} ORDER BY todoDay asc LIMIT 1")
-    @Results({
-            @Result(property = "id",  column = "id"),
-            @Result(property = "nextId",  column = "nextId"),
-            @Result(property = "preId",  column = "preId"),
-            @Result(property = "title",  column = "title"),
-            @Result(property = "todoDay",  column = "todoDay"),
-            @Result(property = "mainType",  column = "mainType"),
-    })
-    TodoType findByMainTypeIdAndMinTodoDay(@Param("mainType") int mainType, @Param("minTodoDay") int minTodoDay);
+
+    @Select("SELECT * FROM TodoType WHERE mainType = #{mainType} and todoWeek >= #{todoWeek} ORDER BY todoWeek asc LIMIT 1")
+    @ResultMap("todoType")
+    TodoType findByMainTypeIdAndMinTodoWeek(@Param("mainType") int mainType, @Param("todoWeek") int todoWeek);
+
+    @Select("SELECT * FROM TodoType WHERE mainType = #{mainType} and todoMonth >= #{todoMonth} ORDER BY todoMonth asc LIMIT 1")
+    @ResultMap("todoType")
+    TodoType findByMainTypeIdAndMinTodoMonth(@Param("mainType") int mainType, @Param("todoMonth") int todoMonth);
+
+
 }

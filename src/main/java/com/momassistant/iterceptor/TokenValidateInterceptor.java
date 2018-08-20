@@ -34,6 +34,9 @@ public class TokenValidateInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
+        if (!(handler instanceof HandlerMethod)) {
+            return true;
+        }
         UserValidate userValidate = ((HandlerMethod) handler).getMethodAnnotation(UserValidate.class);
         if (userValidate == null) {
             return true;

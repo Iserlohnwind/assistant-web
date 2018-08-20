@@ -30,6 +30,9 @@ public interface TodoLogMapper {
     @Options(useGeneratedKeys=true,keyProperty="id")
     void insertLog(TodoLog todoLog);
 
+    @Insert("select count(id) FROM TodoLog WEHRE WHERE userId=#{userId} and babyId=#{babyId}")
+    int countLog(TodoLog todoLog);
+
     @Update("UPDATE TodoLog set typeId=#{typeId},sendTime=#{sendTime},dataJson=#{dataJson},url=#{url} WHERE userId=#{userId}")
     void updateLog(TodoLog todoLog);
 

@@ -2,6 +2,7 @@ package com.momassistant.service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.momassistant.entity.response.*;
+import com.momassistant.enums.GenderType;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
 import com.momassistant.mapper.*;
@@ -24,10 +25,9 @@ import java.util.stream.Collectors;
 public class LactationTodoService {
     @Autowired
     private TodoTypeMapper todoTypeMapper;
+
     @Autowired
-    private TodoTypeDetailMapper todoTypeDetailMapper;
-    @Autowired
-    private TodoLogMapper todoLogMapper;
+    private TodoLogService todoLogService;
     @Autowired
     private UserInfoMapper userInfoMapper;
     @Autowired
@@ -35,6 +35,9 @@ public class LactationTodoService {
     @Autowired
     @Qualifier("lactationTodoDelayedTask")
     private DelayedTask lactationTodoDelayedTask;
+
+    @Autowired
+    private CommonTodoService commonTodoService;
 
     /**
      * 修改孕期的时候初始化todo
@@ -46,8 +49,8 @@ public class LactationTodoService {
         List<BabyInfo> babyInfoList = babyInfoMapper.findByUserId(userId);
         if (!CollectionUtils.isEmpty(babyInfoList)) {
             babyInfoList.stream().forEach(babyInfo -> {
-                clearOldTodo(babyInfo);
-                createNewTodo(userInfo, babyInfo);
+                TodoType todoType = findLatestTodoType(babyInfo.getBabyBirthday());
+                createTodo(todoType, userInfo, babyInfo);
             });
         }
 
@@ -77,99 +80,65 @@ public class LactationTodoService {
         return userLactationTodoResp;
     }
 
-
-    public TodoDetailResp getTodoDetail(int typeId) {
-        TodoDetailResp todoDetailResp = new TodoDetailResp();
-        List<TodoTypeDetail> typeDetailList = todoTypeDetailMapper.findByTypeId(typeId);
-        if (!CollectionUtils.isEmpty(typeDetailList)) {
-            todoDetailResp.setDetailItemList(typeDetailList.stream().map(typeDetail-> {
-                TodoDetailItem todoDetailItem = new TodoDetailItem();
-                todoDetailItem.setTitle(typeDetail.getTitle());
-                todoDetailItem.setContent(typeDetail.getContent());
-                return todoDetailItem;
-            }).collect(Collectors.toList()));
-        }
-        return todoDetailResp;
-    }
-
-
-    /**
-     * 打开提醒开关
-     * @param userId
-     */
-    public void notifyOn(int userId) {
-        userInfoMapper.updateTodoNotifySwitch(userId, TodoNotifySwitch.ON.getVal());
-    }
-
-    /**
-     * 关闭提醒开关
-     * @param userId
-     */
-    public void notifyOff(int userId) {
-        userInfoMapper.updateTodoNotifySwitch(userId, TodoNotifySwitch.OFF.getVal());
-    }
-
-
-    private void clearOldTodo(BabyInfo babyInfo) {
-        LactationTodo lactationTodo = new LactationTodo(babyInfo.getBabyId());
-        lactationTodoDelayedTask.endTask(new DelayedMessage(new Date(), lactationTodo));
-        todoLogMapper.deleteLogByBabyId(babyInfo.getBabyId());
-    }
-
-    private void createNewTodo(UserInfo userInfo, BabyInfo babyInfo) {
-        TodoType todoType = findLatestTodoType(babyInfo.getBabyBirthday());
+    public void createTodo(TodoType todoType, UserInfo userInfo, BabyInfo babyInfo) {
         if (todoType != null) {
-            List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
-
-
             Map<String, String> data = new HashMap<>();
-            Date sendTime = calSendTime(babyInfo.getBabyBirthday(), todoType);
+            Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
+            Date sendDate = caculateSendDate(todoDate);
             data.put("first", "尊敬的家长,您好!您的孩子今日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!");
             data.put("keyword1", String.format("姓名：%s", babyInfo.getBabyName()));
-            data.put("keyword2", String.format("性别：%s", babyInfo.getBabyGender()));
-            data.put("keyword3", DateUtil.format(sendTime));
-            data.put("keyword4", String.format("计划接种疫苗：%s", "xx"));
-            data.put("remark", "注意事项：%s");
+            data.put("keyword2", String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()));
+            data.put("keyword3", DateUtil.format(todoDate));
+            data.put("keyword4", String.format("计划接种疫苗：%s", todoType.getTitle()));
 
+            List<TodoTypeDetail> todoTypeDetailList = commonTodoService.findByTypeId(todoType.getId());
+            todoTypeDetailList.stream().forEach(todoTypeDetail -> {
+                if ("remark".equals(todoTypeDetail.getKeyword())) {
+                    data.put("remark", String.format("注意事项：%s", todoTypeDetail.getContent()));
+                }
+            });
             LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), data, babyInfo);
-            TodoLog todoLog = createTodoLog(sendTime, todo);
-            todoLogMapper.insertLog(todoLog);
-            lactationTodoDelayedTask.put(sendTime, todo);
+            todoLogService.refreshTodoLog(sendDate, todo);
+            lactationTodoDelayedTask.put(sendDate, todo);
         }
     }
 
     private TodoType findLatestTodoType(Date birthDate) {
-        int minTodoDay = DateUtil.getIntervalOfCalendarDay(new Date(), birthDate);
-        TodoType todoType = todoTypeMapper.findByMainTypeIdAndMinTodoDay(TodoMainType.Lactation.getType(), minTodoDay);
+        int minTodoMonth;
+        if (DateUtil.lessThan24Hour(birthDate)) {
+            minTodoMonth = 0;
+        }
+        else {
+            minTodoMonth = Math.max(DateUtil.getBabyMonthDiff(birthDate), 1);
+        }
+        TodoType todoType = todoTypeMapper.findByMainTypeIdAndMinTodoMonth(TodoMainType.Lactation.getType(), minTodoMonth);
         return todoType;
     }
 
-    private Date calSendTime(Date birthDate, TodoType todoType) {
-        Date sendTime = DateUtil.addDays(birthDate, todoType.getTodoDay());
-        return sendTime;
+
+    private Date caculateTodoDate(Date birthDate, TodoType todoType) {
+        Date todoDate = DateUtil.addDays(DateUtil.addMonths(birthDate, todoType.getTodoMonth()), 1);
+        return todoDate;
     }
 
-
-    private TodoLog createTodoLog(Date sendTime, Todo todo) {
-        //新提醒入库
-        TodoLog todoLog = new TodoLog();
-        todoLog.setUserId(todo.getUserId());
-        todoLog.setOpenId(todo.getOpenId());
-        todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
-        todoLog.setUrl("");
-        todoLog.setTypeId(todo.getTypeId());
-        todoLog.setSendTime(sendTime);
-        todoLog.setMainTypeId(TodoMainType.GESTATION.getType());
-        return todoLog;
+    private Date caculateSendDate(Date todoDate) {
+        Date sendDate = DateUtil.addDays(todoDate, -6);
+        Date now = new Date();
+        while (sendDate.before(now)) {
+            sendDate = DateUtil.addDays(sendDate, 1);
+        }
+        return sendDate;
     }
 
 
     private TodoItem transferTodoTypeToItem(Date birthDate, TodoType todoType) {
         TodoItem todoItem = new TodoItem();
         todoItem.setTypeId(todoType.getId());
-        Date  todoDate = DateUtil.addDays(birthDate, todoType.getTodoDay());
+        Date todoDate = caculateTodoDate(birthDate, todoType);
         todoItem.setTodoDate(DateUtil.format(todoDate));
         todoItem.setTodoTitle(todoType.getTitle());
         return todoItem;
     }
+
+
 }

@@ -13,7 +13,8 @@ public class TodoType implements Serializable{
     private int id;
     private int nextId;
     private int preId;
-    private int todoDay;
+    private int todoWeek;
+    private int todoMonth;
     private String title;
     private int mainType;
 }

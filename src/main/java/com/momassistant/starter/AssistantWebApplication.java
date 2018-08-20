@@ -15,15 +15,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @MapperScan("com.momassistant.mapper")
 @ComponentScan(basePackages = "com.momassistant")
 @EnableAsync
-public class AssistantWebApplication extends WebMvcConfigurationSupport {
+public class AssistantWebApplication  {
 
 	public static void main(String[] args) {
 		SpringApplication.run(AssistantWebApplication.class, args);
 	}
 
-
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new TokenValidateInterceptor()).addPathPatterns("/**");
-		System.out.println("===========   拦截器注册完毕   ===========");
-	}
 }

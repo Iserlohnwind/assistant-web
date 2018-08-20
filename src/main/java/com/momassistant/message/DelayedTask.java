@@ -1,5 +1,7 @@
 package com.momassistant.message;
 
+import com.momassistant.service.LactationTodoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -28,7 +30,6 @@ public abstract class DelayedTask<T> {
      * 守护线程
      */
     private Thread daemonThread;
-
 
 
     @PostConstruct

@@ -8,7 +8,13 @@ import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.mapper.model.TodoType;
+import com.momassistant.mapper.model.TodoTypeDetail;
+import com.momassistant.mapper.model.UserInfo;
+import com.momassistant.service.CommonTodoService;
+import com.momassistant.service.GestationTodoService;
+import com.momassistant.service.LactationTodoService;
 import com.momassistant.utils.DateUtil;
+import com.momassistant.utils.SpringContextAware;
 import com.momassistant.utils.WechatAuthUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,16 +31,14 @@ import java.util.Map;
  */
 @Component("gestationTodoDelayedTask")
 public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
-    private static final String FIRST_TEMPLATE = "亲爱的准妈妈,%s天后您将进行%s";
-
     @Autowired
     private TodoTypeMapper todoTypeMapper;
-    @Autowired
-    private TodoTypeDetailMapper todoTypeDetailMapper;
     @Autowired
     private TodoLogMapper todoLogMapper;
     @Autowired
     private UserInfoMapper userInfoMapper;
+    @Autowired
+    private CommonTodoService commonTodoService;
 
     public void initQueue() {
         List<TodoLog> todoLogList = null;
@@ -54,7 +58,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
             @Override
             public void run() {
 
-                if (checkTodoNotifySwitchOn(todo.getUserId())){
+                if (commonTodoService.checkTodoNotifySwitchOn(todo.getUserId())){
                     //发送过程，暂未实现
                     //....
                     WechatAuthUtil.sendMsg(TodoMainType.GESTATION, todo.getOpenId(), todo.getData());
@@ -65,41 +69,12 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         };
     }
 
-    private boolean checkTodoNotifySwitchOn(int userId) {
-        return userInfoMapper.getTodoNotifySwitch(userId) == TodoNotifySwitch.ON.getVal();
-    }
-
-
     private void createNextTodo(GestationTodo oldTodo) {
+        GestationTodoService gestationTodoService = SpringContextAware.getBean(GestationTodoService.class);
         TodoType todoType = todoTypeMapper.findByPreId(oldTodo.getTypeId());
-        Map<String, String> data = new HashMap<>();
-        Date sendTime = calSendTime(oldTodo.getUserId(), todoType);
-        int timeRemaining = DateUtil.getIntervalOfCalendarDay(sendTime, new Date());
-        data.put("first", String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()));
-        data.put("keyword1", DateUtil.format(sendTime));
-        data.put("keyword2", "xxxx");
-        data.put("remark", "点击查看本次产检更多注意事项吧~");
-        GestationTodo newTodo = new GestationTodo(todoType.getId(), oldTodo.getUserId(), oldTodo.getOpenId(), data);
-        put(sendTime, newTodo);
-        TodoLog todoLog = new TodoLog();
-        createTodoLog(sendTime, newTodo);
-        todoLogMapper.updateLog(todoLog);
-    }
-
-    private TodoLog createTodoLog(Date sendTime, Todo todo) {
-        //新提醒入库
-        TodoLog todoLog = new TodoLog();
-        todoLog.setUserId(todo.getUserId());
-        todoLog.setOpenId(todo.getOpenId());
-        todoLog.setTypeId(todo.getTypeId());
-        todoLog.setSendTime(sendTime);
-        todoLog.setMainTypeId(TodoMainType.GESTATION.getType());
-        return todoLog;
-    }
-
-    private Date calSendTime(int userId, TodoType todoType) {
-        Date edc = userInfoMapper.getUserDetail(userId).getEdc();
-        Date sendTime = DateUtil.addDays(edc, todoType.getTodoDay());
-        return sendTime;
+        UserInfo userInfo = userInfoMapper.getUserDetail(oldTodo.getUserId());
+        if (todoType != null) {
+            gestationTodoService.createTodo(userInfo, todoType);
+        }
     }
 }
