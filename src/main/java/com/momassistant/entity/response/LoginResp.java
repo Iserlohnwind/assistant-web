@@ -10,4 +10,5 @@ public class LoginResp {
     private int userId;
     private String userToken;
     private long ttl;
+    private String publicAcccountAppId;
 }

@@ -61,6 +61,7 @@ public class LactationTodoService {
         UserLactationTodoResp userLactationTodoResp = new UserLactationTodoResp();
         UserInfo userInfo = userInfoMapper.getUserDetail(userId);
         userLactationTodoResp.setTodoNotifySwitch(userInfo.getTodoNotifySwitch());
+        userLactationTodoResp.setUserHeadPic(userInfo.getUserHeadPic());
         List<BabyInfo> babyInfoList = babyInfoMapper.findByUserId(userId);
         if (!CollectionUtils.isEmpty(babyInfoList)) {
             userLactationTodoResp.setBabyList(babyInfoList.stream().map(babyInfo -> {
@@ -68,7 +69,7 @@ public class LactationTodoService {
                 List<TodoItem> todoItemList = new ArrayList<TodoItem>();
                 TodoType currentTodoType = findLatestTodoType(babyInfo.getBabyBirthday());
                 while (currentTodoType != null) {
-                    todoItemList.add(transferTodoTypeToItem(userInfo.getEdc(), currentTodoType));
+                    todoItemList.add(transferTodoTypeToItem(babyInfo.getBabyBirthday(), currentTodoType));
                     currentTodoType = todoTypeMapper.findById(currentTodoType.getNextId());
                 }
                 babyTodoResp.setBabyName(babyInfo.getBabyName());

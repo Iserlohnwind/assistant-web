@@ -25,6 +25,8 @@ public interface UserInfoMapper {
             @Result(property = "userType",  column = "userType"),
             @Result(property = "edc",  column = "edc"),
             @Result(property = "todoNotifySwitch",  column = "todoNotifySwitch"),
+            @Result(property = "paOpenId",  column = "paOpenId"),
+
 
     })
     UserInfo getUserDetail(@Param("userId") int userId);
@@ -77,6 +79,11 @@ public interface UserInfoMapper {
                             @Param("userName") String userName,
                             @Param("mobile") String mobile,
                             @Param("userRegion") String userRegion);
+
+
+    @Update("update UserInfo set paOpenId=#{paOpenId} WEHRE id=#{userId} ")
+    void updatePublicAccountOpenIdByUserId(@Param("userId") int userId,
+                             @Param("paOpenId") String paOpenId);
 
 
 }

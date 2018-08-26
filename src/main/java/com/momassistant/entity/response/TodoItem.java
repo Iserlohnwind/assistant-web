@@ -23,4 +23,6 @@ public class TodoItem implements Serializable{
      * 提醒类型
      */
     private int typeId;
+
+    private String atttention;
 }

@@ -85,4 +85,10 @@ public class UserInfoService {
                 setupLactationInfoReq.getUserRegion()
         );
     }
+
+    public void bindPublicAccount(int userId, String publicAccountOpenId) {
+        userInfoMapper.updatePublicAccountOpenIdByUserId(
+                userId, publicAccountOpenId
+        );
+    }
 }

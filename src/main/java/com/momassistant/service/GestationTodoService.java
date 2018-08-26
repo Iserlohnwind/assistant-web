@@ -29,6 +29,7 @@ import java.util.*;
 @Service
 public class GestationTodoService {
     private static final String FIRST_TEMPLATE = "亲爱的准妈妈,%s天后您将进行%s";
+
     private static final int DAY_INTERVAL = 280;
     @Autowired
     private TodoTypeMapper todoTypeMapper;
@@ -61,7 +62,9 @@ public class GestationTodoService {
         UserGestationTodoResp userGestationTodoResp = new UserGestationTodoResp();
         UserInfo userInfo = userInfoMapper.getUserDetail(userId);
         userGestationTodoResp.setEdcInterval(DateUtil.getIntervalOfCalendarDay(userInfo.getEdc() , new Date()));
+        userGestationTodoResp.setPregnancyTime(caculatePregnancyTime(userGestationTodoResp.getEdcInterval()));
         userGestationTodoResp.setTodoNotifySwitch(userInfo.getTodoNotifySwitch());
+        userGestationTodoResp.setUserHeadPic(userInfo.getUserHeadPic());
         List<TodoItem> todoItemList = new ArrayList<TodoItem>();
         Optional<TodoType> currentTodoType = findLatestTodoType(userInfo.getEdc());
         while (currentTodoType.isPresent()) {
@@ -126,6 +129,26 @@ public class GestationTodoService {
         Date todoDate = caculateTodoDate(edc, todoType);
         todoItem.setTodoDate(DateUtil.format(todoDate));
         todoItem.setTodoTitle(todoType.getTitle());
+        List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
+        todoTypeDetailList.stream().forEach(todoTypeDetail -> {
+            if ("keyword2".equals(todoTypeDetail.getKeyword())) {
+                todoItem.setAtttention(todoTypeDetail.getContent());
+            }
+        });
         return todoItem;
+    }
+
+    private String caculatePregnancyTime(int edcInterval) {
+        StringBuilder pregnancyTime = new StringBuilder("已怀孕 ");
+        int pregnancyDay = DAY_INTERVAL - edcInterval;
+        int pregnancyWeek = pregnancyDay / 7;
+        pregnancyDay = pregnancyDay % 7;
+        if (pregnancyWeek > 0) {
+            pregnancyTime.append(pregnancyWeek + "周+");
+        }
+        if (pregnancyDay > 0) {
+            pregnancyTime.append(pregnancyDay + "天+");
+        }
+        return pregnancyTime.substring(0, pregnancyTime.length() - 1);
     }
 }

@@ -1,14 +1,19 @@
 package com.momassistant.controller;
 
 import com.momassistant.ReturnCode;
+import com.momassistant.annotations.UserValidate;
 import com.momassistant.constants.Constant;
+import com.momassistant.constants.WeixinConstant;
 import com.momassistant.entity.request.LoginReq;
 import com.momassistant.entity.response.LoginResp;
+import com.momassistant.enums.WchatAppType;
 import com.momassistant.service.UserInfoService;
 import com.momassistant.entity.Response;
 import com.momassistant.utils.DateUtil;
+import com.momassistant.utils.HtmlUtil;
 import com.momassistant.utils.UserTokenGenerator;
 import com.momassistant.utils.WechatAuthUtil;
+import com.momassistant.wechat.WexinAuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -29,12 +34,14 @@ public class AuthController {
 
     @Autowired
     private UserInfoService userInfoService;
+    @Autowired
+    private WexinAuthService wexinAuthService;
     //获取凭证校检接口
     @ApiOperation(value = "获取凭证校检接口", notes = "获取凭证校检接口", httpMethod = "POST")
     @ApiImplicitParam(name = "code", value = "微信api返回的code", required = true, dataType = "String")
     @RequestMapping(value = "/auth/login", method = RequestMethod.POST)
     public Response<LoginResp> login(LoginReq loginReq) {
-        String openId = WechatAuthUtil.auth(loginReq.getCode());
+        String openId = wexinAuthService.auth(loginReq.getCode(), WchatAppType.SMALL_PROGRAM);
         if (StringUtils.isEmpty(openId)) {
             return Response.error(ReturnCode.LOGIN_FAILED);
         }
@@ -52,7 +59,22 @@ public class AuthController {
         loginResp.setUserId(userId);
         loginResp.setUserToken(token);
         loginResp.setTtl(Constant.USER_SESSION_TTL);
+        loginResp.setPublicAcccountAppId(WeixinConstant.PUBLIC_ACCOUNT_APP_ID);
         return Response.success(loginResp);
+    }
+
+    //获取凭证校检接口
+    @ApiOperation(value = "公众号用户信息和小程序用户信息绑定", notes = "公众号用户信息和小程序用户信息绑定", httpMethod = "POST")
+    @ApiImplicitParam(name = "code", value = "微信api返回的code", required = true, dataType = "String")
+    @RequestMapping(value = "/auth/bind", method = RequestMethod.POST)
+    @UserValidate
+    public Response<Boolean> bind(LoginReq loginReq) {
+        String openId = wexinAuthService.auth(loginReq.getCode(), WchatAppType.PUBLIC_ACCOUNT);
+        if (StringUtils.isEmpty(openId)) {
+            return Response.success(Boolean.FALSE);
+        }
+        userInfoService.bindPublicAccount(HtmlUtil.getUserId(), openId);
+        return Response.success(Boolean.TRUE);
     }
 
 }

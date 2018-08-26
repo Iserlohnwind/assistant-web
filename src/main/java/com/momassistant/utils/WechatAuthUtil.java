@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.momassistant.constants.WeixinConstant;
 import com.momassistant.entity.WechatAuthResponse;
 import com.momassistant.entity.WechatGetAccessTokenResponse;
-import com.momassistant.entity.response.TodoDetailItem;
 import com.momassistant.entity.wechat.MsgItem;
 import com.momassistant.entity.wechat.WechatSendMsgReq;
 import com.momassistant.enums.TodoMainType;
@@ -14,12 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,7 +25,7 @@ public class WechatAuthUtil {
 
     public static String auth(String code) {
         //微信的接口
-        String url = String.format(WeixinConstant.AUTH_URL, code);
+        String url = String.format(WeixinConstant.SMALL_APP_AUTH_URL, code);
         RestTemplate restTemplate = new RestTemplate();
         //进行网络请求,访问url接口
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
@@ -102,4 +96,26 @@ public class WechatAuthUtil {
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
     }
 
+    public static void main(String[] args) {
+        WechatSendMsgReq wechatSendMsgReq = new WechatSendMsgReq();
+        wechatSendMsgReq.setTouser("oOBPE5EaVhcVScDp42lZCN_-fBxs");
+        wechatSendMsgReq.setTemplate_id(WechatMsgTemplate.LACTATION_MSG.getTemplateId());
+        Map<String, MsgItem> data = new HashMap<>();
+        Map<String, String> originData = new HashMap<>();
+        originData.put("first", "尊敬的家长,您好!您的孩子今日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!");
+        originData.put("keyword1", "xxxxx");
+        originData.put("keyword2", "xxxx");
+        originData.put("keyword3", "2018-10-10");
+        originData.put("keyword4", String.format("计划接种疫苗：xxx"));
+        originData.put("remark", String.format("计划接种疫苗:xxx"));
+
+        for (String key : originData.keySet()) {
+            MsgItem msgItem = new MsgItem();
+            msgItem.setValue(originData.get(key));
+            msgItem.setColor("#888888");
+            data.put(key, msgItem);
+        }
+        wechatSendMsgReq.setData(data);
+        System.out.println(JSONObject.toJSON(wechatSendMsgReq));
+    }
 }

@@ -15,5 +15,7 @@ public class UserLactationTodoResp implements Serializable{
      */
     private int todoNotifySwitch;
 
+    private String userHeadPic;
+
     private List<BabyTodoResp> babyList;
 }

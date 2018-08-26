@@ -21,4 +21,5 @@ public class UserInfo implements Serializable{
     private int userType;
     private Date edc;
     private int todoNotifySwitch;
+    private String paOpenId;
 }

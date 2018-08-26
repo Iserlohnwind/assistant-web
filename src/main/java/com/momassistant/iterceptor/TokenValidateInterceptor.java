@@ -4,6 +4,8 @@ import com.momassistant.annotations.UserValidate;
 import com.momassistant.exception.TokenValidateException;
 import com.momassistant.service.UserInfoService;
 import com.momassistant.utils.SpringContextAware;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -18,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class TokenValidateInterceptor implements HandlerInterceptor {
 
+    protected static final Log logger = LogFactory.getLog(TokenValidateInterceptor.class);
 
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)
@@ -44,6 +47,7 @@ public class TokenValidateInterceptor implements HandlerInterceptor {
         UserInfoService userInfoService = SpringContextAware.getBean(UserInfoService.class);
         String userToken = request.getHeader("userToken");
         String userIdStr = request.getHeader("userId");
+        logger.info(String.format("userToken:%s,userId:%s", userToken, userIdStr));
         int userId = 0;
         try {
             userId = Integer.parseInt(userIdStr);

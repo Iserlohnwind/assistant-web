@@ -15,10 +15,14 @@ public class UserGestationTodoResp implements Serializable{
      */
     private int edcInterval;
 
+    private String pregnancyTime;
+
     /**
      * 提醒开关
      */
     private int todoNotifySwitch;
+
+    private String userHeadPic;
 
     private List<TodoItem> todoList;
 }
