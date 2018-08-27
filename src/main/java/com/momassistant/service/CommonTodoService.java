@@ -62,7 +62,9 @@ public class CommonTodoService {
 
 
     public boolean checkTodoNotifySwitchOn(int userId) {
-        return userInfoMapper.getTodoNotifySwitch(userId) == TodoNotifySwitch.ON.getVal();
+        Integer todoNotifySwitch = userInfoMapper.getTodoNotifySwitch(userId);
+        int _todoNotifyWitch = todoNotifySwitch != null ? todoNotifySwitch : 0;
+        return _todoNotifyWitch == TodoNotifySwitch.ON.getVal();
     }
 
 

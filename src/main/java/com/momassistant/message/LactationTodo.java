@@ -3,6 +3,7 @@ package com.momassistant.message;
 import com.momassistant.mapper.model.BabyInfo;
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.mapper.model.TodoTypeDetail;
+import com.momassistant.wechat.WeiXinTemplate;
 import lombok.Data;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public class LactationTodo extends Todo {
     private int babyId;
     private String babyName;
 
-    public LactationTodo(int typeId, int userId, String openId, Map<String, String> data, BabyInfo babyInfo) {
+    public LactationTodo(int typeId, int userId, String openId, WeiXinTemplate data, BabyInfo babyInfo) {
         super(typeId, userId, openId, data);
         this.babyId = babyInfo.getBabyId();
         this.babyName = babyInfo.getBabyName();

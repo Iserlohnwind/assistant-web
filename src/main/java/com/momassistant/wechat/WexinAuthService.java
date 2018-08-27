@@ -27,7 +27,7 @@ public class WexinAuthService {
             logger.info(respJson);
             //解析从微信服务器获得的openid和session_key;
             JSONObject resp = JSONObject.parseObject(respJson);
-            if (resp.containsKey("errcode")) {
+            if (resp.containsKey("openid")) {
                 return resp.getString("openid");
             }
         }

@@ -2,6 +2,7 @@ package com.momassistant.message;
 
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.mapper.model.TodoTypeDetail;
+import com.momassistant.wechat.WeiXinTemplate;
 import lombok.Data;
 
 import java.util.List;
@@ -22,8 +23,8 @@ public class GestationTodo extends Todo{
         this.setUserId(userId);
     }
 
-    public GestationTodo(int typeId, int userId, String openId, Map<String, String> data) {
-        super(typeId, userId, openId, data);
+    public GestationTodo(int typeId, int userId, String openId, WeiXinTemplate weiXinTemplate) {
+        super(typeId, userId, openId, weiXinTemplate);
     }
 
 

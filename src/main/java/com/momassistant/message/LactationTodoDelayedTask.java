@@ -8,7 +8,7 @@ import com.momassistant.mapper.model.*;
 import com.momassistant.service.LactationTodoService;
 import com.momassistant.utils.DateUtil;
 import com.momassistant.utils.SpringContextAware;
-import com.momassistant.utils.WechatAuthUtil;
+import com.momassistant.wechat.WeiXinMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -32,6 +32,8 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
     private UserInfoMapper userInfoMapper;
     @Autowired
     private BabyInfoMapper babyInfoMapper;
+    @Autowired
+    private WeiXinMessageService weiXinMessageService;
 
 
 
@@ -57,7 +59,7 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
                 if (checkTodoNotifySwitchOn(todo.getUserId())){
                     //发送过程，暂未实现
                     //....
-                    WechatAuthUtil.sendMsg(TodoMainType.Lactation, todo.getOpenId(), todo.getData());
+                    weiXinMessageService.sendTemplateMessage(todo.getWeiXinTemplate());
                 }
                 //新建下一个提醒,存入队列
                 createNextTodo(todo);
@@ -66,7 +68,9 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
     }
 
     private boolean checkTodoNotifySwitchOn(int userId) {
-        return userInfoMapper.getTodoNotifySwitch(userId) == TodoNotifySwitch.ON.getVal();
+        Integer todoNotifySwitch = userInfoMapper.getTodoNotifySwitch(userId);
+        int _todoNotifyWitch = todoNotifySwitch != null ? todoNotifySwitch : 0;
+        return _todoNotifyWitch == TodoNotifySwitch.ON.getVal();
     }
 
 

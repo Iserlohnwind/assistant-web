@@ -1,6 +1,7 @@
 package com.momassistant.message;
 
 import com.momassistant.mapper.model.TodoLog;
+import com.momassistant.wechat.WeiXinTemplate;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class Todo{
     private int typeId;
     private int userId;
     private String openId;
-    private Map<String, String> data;
+    private WeiXinTemplate weiXinTemplate;
 
 
     public Todo() {
@@ -23,11 +24,11 @@ public class Todo{
         this.openId = todoLog.getOpenId();
     }
 
-    public Todo(int typeId, int userId, String openId, Map<String, String> data) {
+    public Todo(int typeId, int userId, String openId, WeiXinTemplate weiXinTemplate) {
         this.typeId = typeId;
         this.userId = userId;
         this.openId = openId;
-        this.data = data;
+        this.weiXinTemplate = weiXinTemplate;
 
     }
 
@@ -55,11 +56,11 @@ public class Todo{
         this.openId = openId;
     }
 
-    public Map<String, String> getData() {
-        return data;
+    public WeiXinTemplate getWeiXinTemplate() {
+        return weiXinTemplate;
     }
 
-    public void setData(Map<String, String> data) {
-        this.data = data;
+    public void setWeiXinTemplate(WeiXinTemplate weiXinTemplate) {
+        this.weiXinTemplate = weiXinTemplate;
     }
 }

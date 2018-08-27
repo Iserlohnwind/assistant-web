@@ -13,6 +13,10 @@ public interface UserInfoMapper {
     @Select("SELECT id FROM UserInfo WHERE openId = #{openId}")
     Integer getUserId(@Param("openId") String openId);
 
+    @Select("SELECT userType FROM UserInfo WHERE id = #{userId}")
+    Integer getUserType(@Param("userId") int userId);
+
+
 
     @Select("SELECT * FROM UserInfo WHERE id = #{userId}")
     @Results({
@@ -51,7 +55,7 @@ public interface UserInfoMapper {
     void updateTodoNotifySwitch(@Param("userId") int userId, @Param("todoNotifySwitch") int todoNotifySwitch);
 
     @Select("SELECT todoNotifySwitch FROM UserInfo WHERE id = #{userId}")
-    int getTodoNotifySwitch(@Param("userId") int userId);
+    Integer getTodoNotifySwitch(@Param("userId") int userId);
 
 
     @Update(

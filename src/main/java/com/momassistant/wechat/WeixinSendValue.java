@@ -6,6 +6,10 @@ import java.io.Serializable;
  * Created by zhufeng on 2018/8/24.
  */
 public class WeiXinSendValue implements Serializable{
+    public WeiXinSendValue(String value, String color) {
+        this.value = value;
+        this.color = color;
+    }
 
     private String value;
     private String color;

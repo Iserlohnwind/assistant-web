@@ -24,7 +24,7 @@ public class TodoLogService {
         TodoLog todoLog = new TodoLog();
         todoLog.setUserId(todo.getUserId());
         todoLog.setOpenId(todo.getOpenId());
-        todoLog.setDataJson(JSONObject.toJSONString(todo.getData()));
+        todoLog.setDataJson(JSONObject.toJSONString(todo.getWeiXinTemplate()));
         todoLog.setUrl("");
         todoLog.setTypeId(todo.getTypeId());
         todoLog.setSendTime(sendDate);

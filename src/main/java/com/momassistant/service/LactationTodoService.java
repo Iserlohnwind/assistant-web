@@ -5,10 +5,15 @@ import com.momassistant.entity.response.*;
 import com.momassistant.enums.GenderType;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
+import com.momassistant.enums.WechatMsgTemplate;
 import com.momassistant.mapper.*;
 import com.momassistant.mapper.model.*;
 import com.momassistant.message.*;
 import com.momassistant.utils.DateUtil;
+import com.momassistant.wechat.GestationMessageData;
+import com.momassistant.wechat.LactationMessageData;
+import com.momassistant.wechat.WeiXinSendValue;
+import com.momassistant.wechat.WeiXinTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -60,6 +65,9 @@ public class LactationTodoService {
     public UserLactationTodoResp getTodoList(int userId) {
         UserLactationTodoResp userLactationTodoResp = new UserLactationTodoResp();
         UserInfo userInfo = userInfoMapper.getUserDetail(userId);
+        if (userInfo == null) {
+            return null;
+        }
         userLactationTodoResp.setTodoNotifySwitch(userInfo.getTodoNotifySwitch());
         userLactationTodoResp.setUserHeadPic(userInfo.getUserHeadPic());
         List<BabyInfo> babyInfoList = babyInfoMapper.findByUserId(userId);
@@ -86,19 +94,9 @@ public class LactationTodoService {
             Map<String, String> data = new HashMap<>();
             Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
             Date sendDate = caculateSendDate(todoDate);
-            data.put("first", "尊敬的家长,您好!您的孩子今日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!");
-            data.put("keyword1", String.format("姓名：%s", babyInfo.getBabyName()));
-            data.put("keyword2", String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()));
-            data.put("keyword3", DateUtil.format(todoDate));
-            data.put("keyword4", String.format("计划接种疫苗：%s", todoType.getTitle()));
+            WeiXinTemplate weiXinTemplate = buildWeixinTemplate(userInfo, babyInfo, todoType);
 
-            List<TodoTypeDetail> todoTypeDetailList = commonTodoService.findByTypeId(todoType.getId());
-            todoTypeDetailList.stream().forEach(todoTypeDetail -> {
-                if ("remark".equals(todoTypeDetail.getKeyword())) {
-                    data.put("remark", String.format("注意事项：%s", todoTypeDetail.getContent()));
-                }
-            });
-            LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), data, babyInfo);
+            LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), weiXinTemplate, babyInfo);
             todoLogService.refreshTodoLog(sendDate, todo);
             lactationTodoDelayedTask.put(sendDate, todo);
         }
@@ -142,4 +140,27 @@ public class LactationTodoService {
     }
 
 
+    private WeiXinTemplate buildWeixinTemplate(UserInfo userInfo, BabyInfo babyInfo, TodoType todoType) {
+        WeiXinTemplate<LactationMessageData> weiXinTemplate = new WeiXinTemplate<LactationMessageData>();
+        weiXinTemplate.setTemplate_id(WechatMsgTemplate.LACTATION_MSG.getTemplateId());
+        weiXinTemplate.setTouser(userInfo.getPaOpenId());
+        LactationMessageData lactationMessageData = new LactationMessageData();
+
+        Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
+        lactationMessageData.setFirst(new WeiXinSendValue("尊敬的家长,您好!您的孩子今日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!", "#888888"));
+        lactationMessageData.setKeyword1(new WeiXinSendValue(String.format("姓名：%s", babyInfo.getBabyName()), "#888888"));
+        lactationMessageData.setKeyword2(new WeiXinSendValue(String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()), "#888888"));
+        lactationMessageData.setKeyword3(new WeiXinSendValue(DateUtil.format(todoDate), "#888888"));
+        lactationMessageData.setKeyword4(new WeiXinSendValue(String.format("计划接种疫苗：%s", todoType.getTitle()), "#888888"));
+
+        List<TodoTypeDetail> todoTypeDetailList = commonTodoService.findByTypeId(todoType.getId());
+        todoTypeDetailList.stream().forEach(todoTypeDetail -> {
+            if ("remark".equals(todoTypeDetail.getKeyword())) {
+                lactationMessageData.setRemark(new WeiXinSendValue(String.format("注意事项：%s", todoTypeDetail.getContent()), "#888888"));
+            }
+        });
+
+        weiXinTemplate.setData(lactationMessageData);
+        return weiXinTemplate;
+    }
 }

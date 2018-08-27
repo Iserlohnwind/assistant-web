@@ -12,7 +12,6 @@ import com.momassistant.entity.Response;
 import com.momassistant.utils.DateUtil;
 import com.momassistant.utils.HtmlUtil;
 import com.momassistant.utils.UserTokenGenerator;
-import com.momassistant.utils.WechatAuthUtil;
 import com.momassistant.wechat.WexinAuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -43,11 +42,11 @@ public class AuthController {
     public Response<LoginResp> login(LoginReq loginReq) {
         String openId = wexinAuthService.auth(loginReq.getCode(), WchatAppType.SMALL_PROGRAM);
         if (StringUtils.isEmpty(openId)) {
-            return Response.error(ReturnCode.LOGIN_FAILED);
+            return Response.error(ReturnCode.WEIXIN_AUTH_FAILED);
         }
         int userId = userInfoService.getUserId(openId);
         if (userId <= 0) {
-            return Response.error(ReturnCode.LOGIN_FAILED);
+            return Response.error(ReturnCode.WEIXIN_AUTH_FAILED);
         }
 
         String token = UserTokenGenerator.createToken(userId, openId);

@@ -1,5 +1,6 @@
 package com.momassistant.controller;
 
+import com.momassistant.ReturnCode;
 import com.momassistant.annotations.UserValidate;
 import com.momassistant.entity.Response;
 import com.momassistant.entity.request.SetupLactationInfoReq;
@@ -75,7 +76,10 @@ public class UserInfoController {
     @RequestMapping(value = "updateGestationalInfo", method = {RequestMethod.POST})
     @UserValidate
     public Response<Boolean> updateGestationalInfo(@RequestBody SetupPregancyInfoReq setupPregancyInfoReq) {
-        userInfoService.updatePregancyInfo(setupPregancyInfoReq);
+        boolean success = userInfoService.updatePregancyInfo(setupPregancyInfoReq);
+        if (!success) {
+            return Response.error(ReturnCode.USER_TYPE_NO_CORRECT);
+        }
         gestationTodoService.initGestationTodo(HtmlUtil.getUserId());
         return Response.success(Boolean.TRUE);
     }
@@ -91,35 +95,12 @@ public class UserInfoController {
     @RequestMapping(value = "updateLactationalInfo", method = {RequestMethod.POST})
     @UserValidate
     public Response<Boolean> updateLactationalInfo(@RequestBody SetupLactationInfoReq setupLactationInfoReq) {
-        userInfoService.updateLactationInfo(setupLactationInfoReq);
+        boolean success = userInfoService.updateLactationInfo(setupLactationInfoReq);
+        if (!success) {
+            return Response.error(ReturnCode.USER_TYPE_NO_CORRECT);
+        }
         babyInfoService.updateBabyInfo(setupLactationInfoReq.getBabyInfoList());
         lactationTodoService.initLactationTodo(HtmlUtil.getUserId());
         return Response.success(Boolean.TRUE);
-    }
-
-
-    public static void main(String[] args) {
-        String sql = "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
-                "VALUES\n" +
-                "\t(%s, '接种项目', '', '');\n" +
-                "\t\n" +
-                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
-                "VALUES\n" +
-                "\t(%s, '接种时间', '', '');\n" +
-                "\t\n" +
-                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
-                "VALUES\n" +
-                "\t(%s, '可预防的传染病', '', '');\n" +
-                "\t\n" +
-                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
-                "VALUES\n" +
-                "\t(%s, '注意事项', '', 'remark');\n" +
-                "\t\n" +
-                "INSERT INTO `TodoTypeDetail` (`typeId`, `title`, `content`, `keyword`)\n" +
-                "VALUES\n" +
-                "\t(%s, '免疫程序', '', '');";
-        for (int i = 17;i<=35;i++) {
-            System.out.println(String.format(sql, i,i,i,i,i));
-        }
     }
 }

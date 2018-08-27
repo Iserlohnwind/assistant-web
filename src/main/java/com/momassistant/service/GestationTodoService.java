@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.momassistant.entity.response.TodoItem;
 import com.momassistant.entity.response.UserGestationTodoResp;
 import com.momassistant.enums.TodoMainType;
+import com.momassistant.enums.WechatMsgTemplate;
 import com.momassistant.mapper.TodoLogMapper;
 import com.momassistant.mapper.TodoTypeDetailMapper;
 import com.momassistant.mapper.TodoTypeMapper;
@@ -16,6 +17,9 @@ import com.momassistant.message.DelayedTask;
 import com.momassistant.message.GestationTodo;
 import com.momassistant.message.Todo;
 import com.momassistant.utils.DateUtil;
+import com.momassistant.wechat.GestationMessageData;
+import com.momassistant.wechat.WeiXinSendValue;
+import com.momassistant.wechat.WeiXinTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -76,21 +80,10 @@ public class GestationTodoService {
     }
 
     public void createTodo(UserInfo userInfo, TodoType todoType) {
-        Map<String, String> data = new HashMap<>();
         Date todoDate = caculateTodoDate(userInfo.getEdc(), todoType);
         Date sendDate = caculateSendDate(todoDate);
-        int timeRemaining = DateUtil.getIntervalOfCalendarDay(todoDate, new Date());
-        data.put("first", String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()));
-        data.put("keyword1", DateUtil.format(todoDate));
-        data.put("remark", "点击查看本次产检更多注意事项吧~");
-        List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
-        todoTypeDetailList.stream().forEach(todoTypeDetail -> {
-            if ("keyword2".equals(todoTypeDetail.getKeyword())) {
-                data.put("keyword2", todoTypeDetail.getContent());
-            }
-        });
-
-        GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), data);
+        WeiXinTemplate<GestationMessageData> weiXinTemplate = buildWeixinTemplate(userInfo, todoType);
+        GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), weiXinTemplate);
         todoLogService.refreshTodoLog(sendDate, todo);
         gestationTodoDelayedTask.put(sendDate, todo);
     }
@@ -150,5 +143,26 @@ public class GestationTodoService {
             pregnancyTime.append(pregnancyDay + "天+");
         }
         return pregnancyTime.substring(0, pregnancyTime.length() - 1);
+    }
+
+    private WeiXinTemplate buildWeixinTemplate(UserInfo userInfo, TodoType todoType) {
+        WeiXinTemplate<GestationMessageData> weiXinTemplate = new WeiXinTemplate<GestationMessageData>();
+        weiXinTemplate.setTemplate_id(WechatMsgTemplate.GESTATION_MSG.getTemplateId());
+        weiXinTemplate.setTouser(userInfo.getPaOpenId());
+        GestationMessageData gestationMessageData = new GestationMessageData();
+        Date todoDate = caculateTodoDate(userInfo.getEdc(), todoType);
+        Date sendDate = caculateSendDate(todoDate);
+        int timeRemaining = DateUtil.getIntervalOfCalendarDay(todoDate, new Date());
+        gestationMessageData.setFirst(new WeiXinSendValue(String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()), "#888888"));
+        gestationMessageData.setKeyword1(new WeiXinSendValue(DateUtil.format(todoDate), "#888888"));
+        gestationMessageData.setRemark(new WeiXinSendValue("点击查看本次产检更多注意事项吧~", "#888888"));
+        List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
+        todoTypeDetailList.stream().forEach(todoTypeDetail -> {
+            if ("keyword2".equals(todoTypeDetail.getKeyword())) {
+                gestationMessageData.setKeyword2(new WeiXinSendValue(todoTypeDetail.getContent(), "#888888"));
+            }
+        });
+        weiXinTemplate.setData(gestationMessageData);
+        return weiXinTemplate;
     }
 }

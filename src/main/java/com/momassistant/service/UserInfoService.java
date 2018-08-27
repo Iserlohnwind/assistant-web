@@ -8,6 +8,7 @@ import com.momassistant.mapper.UserSessionMapper;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.mapper.model.UserSession;
 import com.momassistant.utils.HtmlUtil;
+import com.momassistant.utils.WrapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Component;
@@ -67,7 +68,11 @@ public class UserInfoService {
         );
     }
 
-    public void updatePregancyInfo(SetupPregancyInfoReq userInfoReq) {
+    public boolean updatePregancyInfo(SetupPregancyInfoReq userInfoReq) {
+        int userType = WrapUtils.unwrap(userInfoMapper.getUserType(HtmlUtil.getUserId()), 0);
+        if (userType == 2) {
+            return false;
+        }
         userInfoMapper.updatePregancyInfo(
                 HtmlUtil.getUserId(),
                 userInfoReq.getUserName(),
@@ -75,15 +80,21 @@ public class UserInfoService {
                 userInfoReq.getUserRegion(),
                 userInfoReq.getEdc()
         );
+        return true;
     }
 
-    public void updateLactationInfo(SetupLactationInfoReq setupLactationInfoReq) {
+    public boolean updateLactationInfo(SetupLactationInfoReq setupLactationInfoReq) {
+        int userType = WrapUtils.unwrap(userInfoMapper.getUserType(HtmlUtil.getUserId()), 0);
+        if (userType == 1) {
+            return false;
+        }
         userInfoMapper.updateLactationInfo(
                 HtmlUtil.getUserId(),
                 setupLactationInfoReq.getUserName(),
                 setupLactationInfoReq.getMobile(),
                 setupLactationInfoReq.getUserRegion()
         );
+        return true;
     }
 
     public void bindPublicAccount(int userId, String publicAccountOpenId) {

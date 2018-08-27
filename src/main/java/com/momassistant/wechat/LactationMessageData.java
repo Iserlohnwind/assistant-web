@@ -10,6 +10,9 @@ public class LactationMessageData implements Serializable{
 	private WeiXinSendValue first;
 	private WeiXinSendValue keyword1;
 	private WeiXinSendValue keyword2;
+	private WeiXinSendValue keyword3;
+	private WeiXinSendValue keyword4;
+
 	private WeiXinSendValue remark;
 
 
@@ -42,6 +45,22 @@ public class LactationMessageData implements Serializable{
 	}
 	public void setRemark(WeiXinSendValue remark) {
 		this.remark = remark;
+	}
+
+	public WeiXinSendValue getKeyword3() {
+		return keyword3;
+	}
+
+	public void setKeyword3(WeiXinSendValue keyword3) {
+		this.keyword3 = keyword3;
+	}
+
+	public WeiXinSendValue getKeyword4() {
+		return keyword4;
+	}
+
+	public void setKeyword4(WeiXinSendValue keyword4) {
+		this.keyword4 = keyword4;
 	}
 }
 

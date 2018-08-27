@@ -1,21 +1,16 @@
 package com.momassistant.message;
 
 import com.momassistant.enums.TodoMainType;
-import com.momassistant.enums.TodoNotifySwitch;
 import com.momassistant.mapper.TodoLogMapper;
-import com.momassistant.mapper.TodoTypeDetailMapper;
 import com.momassistant.mapper.TodoTypeMapper;
 import com.momassistant.mapper.UserInfoMapper;
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.mapper.model.TodoType;
-import com.momassistant.mapper.model.TodoTypeDetail;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.service.CommonTodoService;
 import com.momassistant.service.GestationTodoService;
-import com.momassistant.service.LactationTodoService;
-import com.momassistant.utils.DateUtil;
 import com.momassistant.utils.SpringContextAware;
-import com.momassistant.utils.WechatAuthUtil;
+import com.momassistant.wechat.WeiXinMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -39,6 +34,8 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     private UserInfoMapper userInfoMapper;
     @Autowired
     private CommonTodoService commonTodoService;
+    @Autowired
+    private WeiXinMessageService weiXinMessageService;
 
     public void initQueue() {
         List<TodoLog> todoLogList = null;
@@ -60,8 +57,7 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
 
                 if (commonTodoService.checkTodoNotifySwitchOn(todo.getUserId())){
                     //发送过程，暂未实现
-                    //....
-                    WechatAuthUtil.sendMsg(TodoMainType.GESTATION, todo.getOpenId(), todo.getData());
+                    weiXinMessageService.sendTemplateMessage(todo.getWeiXinTemplate());
                 }
                 //新建下一个提醒,存入队列
                 createNextTodo(todo);
