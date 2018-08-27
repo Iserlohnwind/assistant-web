@@ -1,5 +1,6 @@
 package com.momassistant.message;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
@@ -8,7 +9,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Created by zhufeng on 2018/8/15.
  */
-public class DelayedMessage<T> implements Delayed{
+public class DelayedMessage<T extends Todo> implements Delayed,Serializable{
     /**
      * 到期时间
      */

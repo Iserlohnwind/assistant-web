@@ -3,12 +3,13 @@ package com.momassistant.message;
 import com.momassistant.mapper.model.TodoLog;
 import com.momassistant.wechat.WeiXinTemplate;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  * Created by zhufeng on 2018/8/15.
  */
-public class Todo{
+public class Todo implements Serializable{
     private int typeId;
     private int userId;
     private String openId;
@@ -62,5 +63,16 @@ public class Todo{
 
     public void setWeiXinTemplate(WeiXinTemplate weiXinTemplate) {
         this.weiXinTemplate = weiXinTemplate;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        return o.hashCode() == this.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 }

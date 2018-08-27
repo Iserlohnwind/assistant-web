@@ -1,6 +1,9 @@
 package com.momassistant.message;
 
 import com.momassistant.service.LactationTodoService;
+import com.momassistant.utils.DelayedMessageSerializer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
@@ -15,7 +18,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by zhufeng on 2018/8/15.
  */
-public abstract class DelayedTask<T> {
+public abstract class DelayedTask<T extends Todo> {
 
     Executor mainExecutor = Executors.newFixedThreadPool(1);
 
@@ -24,17 +27,20 @@ public abstract class DelayedTask<T> {
     /**
      * 创建一个最初为空的新 DelayQueue
      */
-    private DelayQueue<DelayedMessage<T>> t = new DelayQueue<>();
+    private DelayQueue<DelayedMessage> t = new DelayQueue<>();
 
     /**
      * 守护线程
      */
     private Thread daemonThread;
 
+    protected DelayedMessageSerializer delayedMessageSerializer;
+
 
     @PostConstruct
     @Async
     public void init() {
+        setDelayedMessageSerializer();
         initDaemon();
         initQueue();
         mainExecutor.execute(new Runnable() {
@@ -74,6 +80,7 @@ public abstract class DelayedTask<T> {
     public void put(Date date, Todo task) {
         DelayedMessage k = new DelayedMessage(date, task);
         t.put(k);
+        delayedMessageSerializer.serialize(k);
     }
 
     /**
@@ -92,8 +99,13 @@ public abstract class DelayedTask<T> {
     }
 
 
-    public abstract void initQueue();
+    public void initQueue() {
+        t.addAll(delayedMessageSerializer.deSerialize());
+    }
 
     public abstract Runnable excuteRunable(T t);
+
+
+    public abstract void setDelayedMessageSerializer();
 
 }

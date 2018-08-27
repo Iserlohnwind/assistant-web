@@ -9,6 +9,7 @@ import com.momassistant.mapper.model.TodoType;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.service.CommonTodoService;
 import com.momassistant.service.GestationTodoService;
+import com.momassistant.utils.DelayedMessageSerializer;
 import com.momassistant.utils.SpringContextAware;
 import com.momassistant.wechat.WeiXinMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +37,18 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
     private CommonTodoService commonTodoService;
     @Autowired
     private WeiXinMessageService weiXinMessageService;
-
-    public void initQueue() {
-        List<TodoLog> todoLogList = null;
-        int minId = 0;
-        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.GESTATION.getType()))) {
-            for (TodoLog todoLog : todoLogList) {
-                GestationTodo todo = new GestationTodo(todoLog);
-                put(todoLog.getSendTime(), todo);
-                minId = todoLog.getId();
-            }
-        }
-    }
+//
+//    public void initQueue() {
+//        List<TodoLog> todoLogList = null;
+//        int minId = 0;
+//        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.GESTATION.getType()))) {
+//            for (TodoLog todoLog : todoLogList) {
+//                GestationTodo todo = new GestationTodo(todoLog);
+//                put(todoLog.getSendTime(), todo);
+//                minId = todoLog.getId();
+//            }
+//        }
+//    }
 
     @Override
     public Runnable excuteRunable(GestationTodo todo) {
@@ -72,5 +73,10 @@ public class GestationTodoDelayedTask extends DelayedTask<GestationTodo> {
         if (todoType != null) {
             gestationTodoService.createTodo(userInfo, todoType);
         }
+    }
+
+    @Override
+    public void setDelayedMessageSerializer() {
+        delayedMessageSerializer = new DelayedMessageSerializer("/data/queue/gestation/");
     }
 }

@@ -1,5 +1,6 @@
 package com.momassistant.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.momassistant.ReturnCode;
 import com.momassistant.annotations.UserValidate;
 import com.momassistant.constants.Constant;
@@ -17,6 +18,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +33,7 @@ import java.util.Date;
 @Api("登录认证api")
 @RestController
 public class AuthController {
+    protected static final Log logger = LogFactory.getLog(AuthController.class);
 
     @Autowired
     private UserInfoService userInfoService;
@@ -68,6 +72,7 @@ public class AuthController {
     @RequestMapping(value = "/auth/bind", method = RequestMethod.POST)
     @UserValidate
     public Response<Boolean> bind(LoginReq loginReq) {
+        logger.info("bind loginReq:" + JSONObject.toJSONString(loginReq));
         String openId = wexinAuthService.auth(loginReq.getCode(), WchatAppType.PUBLIC_ACCOUNT);
         if (StringUtils.isEmpty(openId)) {
             return Response.success(Boolean.FALSE);

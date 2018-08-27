@@ -9,7 +9,7 @@ public enum  ReturnCode {
     TOKEN_EXPIRED(401, "token已经过期"),
     UKNOWN(500, "未知错误"),
 
-    USER_TYPE_NO_CORRECT(10001, "用户类型不符"),
+    USER_TYPE_NO_CORRECT(10001, "已经编辑过了"),
     ;
     private int code;
     private String msg;

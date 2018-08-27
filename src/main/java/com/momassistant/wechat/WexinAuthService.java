@@ -20,6 +20,7 @@ public class WexinAuthService {
     public static String auth(String code, WchatAppType wchatAppType) {
         //微信的接口
         String url = WeixinConstant.getAuthUrl(wchatAppType, code);
+        logger.info("auth url:" + url);
         GetMethod getMethod = new GetMethod(url);
         String respJson = HttpClientUtils.executeGetMethod(getMethod);
         if(StringUtils.isNotEmpty(respJson))

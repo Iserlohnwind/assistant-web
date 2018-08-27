@@ -69,7 +69,7 @@ public interface UserInfoMapper {
                           @Param("wechatName") String wechatName,
                           @Param("userHeadPic") String userHeadPic);
 
-    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion}, " +
+    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion}, userType=1," +
             "edc=#{edcDate} where id=#{userId} ")
     void updatePregancyInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
@@ -78,14 +78,14 @@ public interface UserInfoMapper {
                             @Param("edcDate") Date edcDate);
 
 
-    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion} where id=#{userId} ")
+    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion}, userType=2 where id=#{userId} ")
     void updateLactationInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
                             @Param("mobile") String mobile,
                             @Param("userRegion") String userRegion);
 
 
-    @Update("update UserInfo set paOpenId=#{paOpenId} WEHRE id=#{userId} ")
+    @Update("update UserInfo set paOpenId=#{paOpenId} WHERE id=#{userId} ")
     void updatePublicAccountOpenIdByUserId(@Param("userId") int userId,
                              @Param("paOpenId") String paOpenId);
 

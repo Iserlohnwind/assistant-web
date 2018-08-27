@@ -6,6 +6,7 @@ import com.momassistant.mapper.model.TodoTypeDetail;
 import com.momassistant.wechat.WeiXinTemplate;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +14,7 @@ import java.util.Map;
  * Created by zhufeng on 2018/8/16.
  */
 @Data
-public class LactationTodo extends Todo {
+public class LactationTodo extends Todo  implements Serializable {
     private int babyId;
     private String babyName;
 
@@ -34,21 +35,8 @@ public class LactationTodo extends Todo {
         this.babyId = todoLog.getBabyId();
     }
 
-
-
-
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        LactationTodo todo = (LactationTodo) o;
-        return this.getBabyId() == todo.getBabyId();
-
-    }
-
-    @Override
-    public int hashCode() {
-        return this.getBabyId();
+    public String toString() {
+        return this.getUserId() + "-" + this.getBabyId();
     }
 }

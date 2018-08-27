@@ -1,22 +1,18 @@
 package com.momassistant.message;
 
-import com.alibaba.fastjson.JSONObject;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.TodoNotifySwitch;
 import com.momassistant.mapper.*;
 import com.momassistant.mapper.model.*;
 import com.momassistant.service.LactationTodoService;
-import com.momassistant.utils.DateUtil;
+import com.momassistant.utils.DelayedMessageSerializer;
 import com.momassistant.utils.SpringContextAware;
 import com.momassistant.wechat.WeiXinMessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by zhufeng on 2018/8/16.
@@ -36,19 +32,21 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
     private WeiXinMessageService weiXinMessageService;
 
 
-
-
-    public void initQueue() {
-        List<TodoLog> todoLogList = null;
-        int minId = 0;
-        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.Lactation.getType()))) {
-            for (TodoLog todoLog : todoLogList) {
-                LactationTodo todo = new LactationTodo(todoLog);
-                put(todoLog.getSendTime(), todo);
-                minId = todoLog.getId();
-            }
-        }
-    }
+//
+//
+//    public void initQueue() {
+////        List<TodoLog> todoLogList = null;
+////        int minId = 0;
+////        while (!CollectionUtils.isEmpty(todoLogList = todoLogMapper.paginateLogs(minId, TodoMainType.Lactation.getType()))) {
+////            for (TodoLog todoLog : todoLogList) {
+////                LactationTodo todo = new LactationTodo(todoLog);
+////                put(todoLog.getSendTime(), todo);
+////                minId = todoLog.getId();
+////            }
+////        }
+//
+//
+//    }
 
     @Override
     public Runnable excuteRunable(LactationTodo todo) {
@@ -80,6 +78,12 @@ public class LactationTodoDelayedTask extends DelayedTask<LactationTodo> {
         UserInfo userInfo = userInfoMapper.getUserDetail(oldTodo.getUserId());
         BabyInfo babyInfo = babyInfoMapper.findByUserIdAndBabyId(oldTodo.getUserId(), oldTodo.getBabyId());
         lactationTodoService.createTodo(todoType, userInfo, babyInfo);
+    }
+
+
+    @Override
+    public void setDelayedMessageSerializer() {
+        delayedMessageSerializer = new DelayedMessageSerializer("/data/queue/lactation/");
     }
 
 }
