@@ -91,13 +91,10 @@ public class LactationTodoService {
 
     public void createTodo(TodoType todoType, UserInfo userInfo, BabyInfo babyInfo) {
         if (todoType != null) {
-            Map<String, String> data = new HashMap<>();
             Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
             Date sendDate = caculateSendDate(todoDate);
             WeiXinTemplate weiXinTemplate = buildWeixinTemplate(userInfo, babyInfo, todoType);
-
             LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), weiXinTemplate, babyInfo);
-            todoLogService.refreshTodoLog(sendDate, todo);
             lactationTodoDelayedTask.put(sendDate, todo);
         }
     }

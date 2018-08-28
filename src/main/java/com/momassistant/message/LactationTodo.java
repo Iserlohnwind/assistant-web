@@ -16,12 +16,10 @@ import java.util.Map;
 @Data
 public class LactationTodo extends Todo  implements Serializable {
     private int babyId;
-    private String babyName;
 
     public LactationTodo(int typeId, int userId, String openId, WeiXinTemplate data, BabyInfo babyInfo) {
         super(typeId, userId, openId, data);
         this.babyId = babyInfo.getBabyId();
-        this.babyName = babyInfo.getBabyName();
     }
 
 

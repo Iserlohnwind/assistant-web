@@ -1,7 +1,6 @@
-package com.momassistant.utils;
+package com.momassistant.message;
 
 import com.alibaba.fastjson.JSONObject;
-import com.momassistant.message.DelayedMessage;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -74,5 +73,32 @@ public class DelayedMessageSerializer {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public void delete(DelayedMessage p) {
+        //写对象流的对象
+        String fiLeName = p.getMessage().toString();
+        String fullName = dir + fiLeName;
+        File file = new File(fullName);
+        if (file.exists()) {
+            file.delete();
+        }
+        //关闭文件流
+    }
+
+
+    public static void main(String[] args) throws Exception{
+
+        ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(new File("/Users/zhufeng/shell/tmp")));
+        oos.writeObject(new Integer(1));                 //将Person对象p写入到oos中
+        oos.close();
+
+        ObjectOutputStream oos2 = new ObjectOutputStream(new FileOutputStream(new File("/Users/zhufeng/shell/tmp")));
+        oos2.writeObject(new Integer(2));                 //将Person对象p写入到oos中
+        oos2.close();
+
+        ObjectInputStream ois = new ObjectInputStream(new FileInputStream(new File("/Users/zhufeng/shell/tmp")));
+        Integer i = (Integer) ois.readObject();              //读出对象
+        System.out.println(i);
     }
 }

@@ -1,16 +1,12 @@
 package com.momassistant.message;
 
-import com.momassistant.service.LactationTodoService;
-import com.momassistant.utils.DelayedMessageSerializer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.momassistant.service.CommonTodoService;
+import com.momassistant.utils.SpringContextAware;
+import com.momassistant.wechat.WeiXinMessageService;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
-import java.util.Map;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -33,16 +29,18 @@ public abstract class DelayedTask<T extends Todo> {
      * 守护线程
      */
     private Thread daemonThread;
-
+    private CommonTodoService commonTodoService;
+    private WeiXinMessageService weiXinMessageService;
     protected DelayedMessageSerializer delayedMessageSerializer;
 
 
     @PostConstruct
     @Async
     public void init() {
-        setDelayedMessageSerializer();
+        initDelayedMessageSerializer();
         initDaemon();
         initQueue();
+        initService();
         mainExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -55,14 +53,15 @@ public abstract class DelayedTask<T extends Todo> {
     private void execute() {
         while (true) {
             try {
-                DelayedMessage<T> t1 = t.take();
-                if (t1 != null) {
+                DelayedMessage<T> delayedMessage = t.take();
+                if (delayedMessage != null) {
                     //修改问题的状态
-                    T message = t1.getMessage();
+                    T message = delayedMessage.getMessage();
                     if (message == null) {
                         continue;
                     }
                     executor.execute(excuteRunable(message));
+                    delayedMessageSerializer.delete(delayedMessage);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -83,14 +82,6 @@ public abstract class DelayedTask<T extends Todo> {
         delayedMessageSerializer.serialize(k);
     }
 
-    /**
-     * 结束订单
-     * @param task
-     */
-    public boolean endTask(DelayedMessage task){
-        return t.remove(task);
-    }
-
     public void initDaemon() {
         daemonThread = new Thread(() -> execute());
         daemonThread.setDaemon(true);
@@ -99,13 +90,34 @@ public abstract class DelayedTask<T extends Todo> {
     }
 
 
-    public void initQueue() {
+    private void initQueue() {
         t.addAll(delayedMessageSerializer.deSerialize());
     }
 
-    public abstract Runnable excuteRunable(T t);
+
+    private void initService() {
+        commonTodoService = SpringContextAware.getBean(CommonTodoService.class);
+        weiXinMessageService = SpringContextAware.getBean(WeiXinMessageService.class);
+    }
 
 
-    public abstract void setDelayedMessageSerializer();
+    public Runnable excuteRunable(T todo) {
+        return new Runnable() {
+            @Override
+            public void run() {
 
-}
+                if (commonTodoService.checkTodoNotifySwitchOn(todo.getUserId())){
+                    //发送过程，暂未实现
+                    weiXinMessageService.sendTemplateMessage(todo.getWeiXinTemplate());
+                }
+                //新建下一个提醒,存入队列
+                createNextTodo(todo);
+            }
+        };
+    }
+
+    protected abstract void initDelayedMessageSerializer();
+
+    protected abstract void createNextTodo(Todo oldTodo);
+
+    }
