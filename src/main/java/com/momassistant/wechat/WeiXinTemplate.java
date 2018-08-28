@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class WeiXinTemplate<DATA> implements Serializable{
 
-	private static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = 3320725223156002791L;
 	private String touser;
 	private String template_id;
 	private Miniprogram miniprogram;

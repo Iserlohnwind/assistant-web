@@ -14,7 +14,7 @@ import java.util.Map;
  * Created by zhufeng on 2018/8/16.
  */
 @Data
-public class LactationTodo extends Todo  implements Serializable {
+public class LactationTodo extends Todo {
     private int babyId;
 
     public LactationTodo(int typeId, int userId, String openId, WeiXinTemplate data, BabyInfo babyInfo) {
@@ -23,8 +23,8 @@ public class LactationTodo extends Todo  implements Serializable {
     }
 
 
-    public LactationTodo(int babyId) {
-        super();
+    public LactationTodo(int userId, int babyId) {
+        super(userId);
         this.babyId = babyId;
     }
 

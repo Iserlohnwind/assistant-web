@@ -10,6 +10,7 @@ import java.util.Map;
  * Created by zhufeng on 2018/8/15.
  */
 public class Todo implements Serializable{
+    private static final long serialVersionUID = 3060347430292339202L;
     private int typeId;
     private int userId;
     private String openId;
@@ -17,6 +18,11 @@ public class Todo implements Serializable{
 
 
     public Todo() {
+    }
+
+
+    public Todo(int userId) {
+        this.userId = userId;
     }
 
     public Todo(TodoLog todoLog) {

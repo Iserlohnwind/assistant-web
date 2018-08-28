@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Created by zhufeng on 2018/8/15.
  */
 public class DelayedMessage<T extends Todo> implements Delayed,Serializable{
+    private static final long serialVersionUID = 7078552402036435749L;
     /**
      * 到期时间
      */

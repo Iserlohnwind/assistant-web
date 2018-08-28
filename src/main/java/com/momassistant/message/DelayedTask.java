@@ -29,8 +29,6 @@ public abstract class DelayedTask<T extends Todo> {
      * 守护线程
      */
     private Thread daemonThread;
-    private CommonTodoService commonTodoService;
-    private WeiXinMessageService weiXinMessageService;
     protected DelayedMessageSerializer delayedMessageSerializer;
 
 
@@ -40,7 +38,6 @@ public abstract class DelayedTask<T extends Todo> {
         initDelayedMessageSerializer();
         initDaemon();
         initQueue();
-        initService();
         mainExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -82,6 +79,18 @@ public abstract class DelayedTask<T extends Todo> {
         delayedMessageSerializer.serialize(k);
     }
 
+
+    /**
+     * 结束订单
+     * @param task
+     */
+    public void remove(Todo task){
+        DelayedMessage delayedMessage = new DelayedMessage(new Date(), task);
+        t.remove(delayedMessage);
+        delayedMessageSerializer.delete(delayedMessage);
+    }
+
+
     public void initDaemon() {
         daemonThread = new Thread(() -> execute());
         daemonThread.setDaemon(true);
@@ -94,18 +103,13 @@ public abstract class DelayedTask<T extends Todo> {
         t.addAll(delayedMessageSerializer.deSerialize());
     }
 
-
-    private void initService() {
-        commonTodoService = SpringContextAware.getBean(CommonTodoService.class);
-        weiXinMessageService = SpringContextAware.getBean(WeiXinMessageService.class);
-    }
-
-
     public Runnable excuteRunable(T todo) {
         return new Runnable() {
             @Override
             public void run() {
 
+                CommonTodoService commonTodoService = SpringContextAware.getBean(CommonTodoService.class);
+                WeiXinMessageService weiXinMessageService = SpringContextAware.getBean(WeiXinMessageService.class);
                 if (commonTodoService.checkTodoNotifySwitchOn(todo.getUserId())){
                     //发送过程，暂未实现
                     weiXinMessageService.sendTemplateMessage(todo.getWeiXinTemplate());
@@ -115,6 +119,7 @@ public abstract class DelayedTask<T extends Todo> {
             }
         };
     }
+
 
     protected abstract void initDelayedMessageSerializer();
 

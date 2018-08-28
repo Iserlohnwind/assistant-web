@@ -6,6 +6,7 @@ import com.momassistant.entity.Response;
 import com.momassistant.entity.request.SetupLactationInfoReq;
 import com.momassistant.entity.request.SetupPregancyInfoReq;
 import com.momassistant.entity.request.SetupWechatInfoReq;
+import com.momassistant.mapper.model.BabyInfo;
 import com.momassistant.mapper.model.UserInfo;
 import com.momassistant.service.BabyInfoService;
 import com.momassistant.service.GestationTodoService;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * Created by zhufeng on 2018/8/14.
@@ -99,8 +102,10 @@ public class UserInfoController {
         if (!success) {
             return Response.error(ReturnCode.USER_TYPE_NO_CORRECT);
         }
+
+        List<BabyInfo> babyInfoList = babyInfoService.findByUserId();
         babyInfoService.updateBabyInfo(setupLactationInfoReq.getBabyInfoList());
-        lactationTodoService.initLactationTodo(HtmlUtil.getUserId());
+        lactationTodoService.initLactationTodo(babyInfoList, HtmlUtil.getUserId());
         return Response.success(Boolean.TRUE);
     }
 }

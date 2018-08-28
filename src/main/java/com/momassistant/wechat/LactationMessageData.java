@@ -3,10 +3,7 @@ package com.momassistant.wechat;
 import java.io.Serializable;
 
 public class LactationMessageData implements Serializable{
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -1L;
+	private static final long serialVersionUID = -8181800141515725346L;
 	private WeiXinSendValue first;
 	private WeiXinSendValue keyword1;
 	private WeiXinSendValue keyword2;

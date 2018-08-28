@@ -34,4 +34,8 @@ public interface BabyInfoMapper {
             @Result(property = "babyGender",  column = "babyGender"),
     })
     BabyInfo findByUserIdAndBabyId(@Param("userId") int userId, @Param("babyId") int babyId);
+
+
+    @Delete("DELETE FROM BabyInfo WHERE userId=#{userId}")
+    void deleteByUserId(@Param("userId") int userId);
 }

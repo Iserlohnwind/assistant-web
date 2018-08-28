@@ -2,10 +2,10 @@ package com.momassistant.wechat;
 
 import java.io.Serializable;
 
-/**
- * Created by zhufeng on 2018/8/24.
- */
+
 public class WeiXinSendValue implements Serializable{
+    private static final long serialVersionUID = 3228807272076076691L;
+
     public WeiXinSendValue(String value, String color) {
         this.value = value;
         this.color = color;

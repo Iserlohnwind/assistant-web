@@ -13,15 +13,14 @@ import java.util.Map;
  * Created by zhufeng on 2018/8/16.
  */
 @Data
-public class GestationTodo extends Todo implements Serializable{
+public class GestationTodo extends Todo {
 
     public GestationTodo(TodoLog todoLog) {
         super(todoLog);
     }
 
     public GestationTodo(int userId) {
-        super();
-        this.setUserId(userId);
+        super(userId);
     }
 
     public GestationTodo(int typeId, int userId, String openId, WeiXinTemplate weiXinTemplate) {

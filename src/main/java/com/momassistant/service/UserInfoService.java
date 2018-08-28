@@ -70,9 +70,9 @@ public class UserInfoService {
 
     public boolean updatePregancyInfo(SetupPregancyInfoReq userInfoReq) {
         int userType = WrapUtils.unwrap(userInfoMapper.getUserType(HtmlUtil.getUserId()), 0);
-//        if (userType > 0) {
-//            return false;
-//        }
+        if (userType == 2) {
+            return false;
+        }
         userInfoMapper.updatePregancyInfo(
                 HtmlUtil.getUserId(),
                 userInfoReq.getUserName(),
@@ -85,9 +85,9 @@ public class UserInfoService {
 
     public boolean updateLactationInfo(SetupLactationInfoReq setupLactationInfoReq) {
         int userType = WrapUtils.unwrap(userInfoMapper.getUserType(HtmlUtil.getUserId()), 0);
-//        if (userType > 0) {
-//            return false;
-//        }
+        if (userType == 1) {
+            return false;
+        }
         userInfoMapper.updateLactationInfo(
                 HtmlUtil.getUserId(),
                 setupLactationInfoReq.getUserName(),

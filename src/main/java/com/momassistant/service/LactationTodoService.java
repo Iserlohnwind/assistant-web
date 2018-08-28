@@ -32,8 +32,6 @@ public class LactationTodoService {
     private TodoTypeMapper todoTypeMapper;
 
     @Autowired
-    private TodoLogService todoLogService;
-    @Autowired
     private UserInfoMapper userInfoMapper;
     @Autowired
     private BabyInfoMapper babyInfoMapper;
@@ -49,16 +47,23 @@ public class LactationTodoService {
      * @param userId
      */
     @Async
-    public void initLactationTodo(int userId) {
+    public void initLactationTodo(List<BabyInfo> oldBabyInfoList, int userId) {
         UserInfo userInfo = userInfoMapper.getUserDetail(userId);
         List<BabyInfo> babyInfoList = babyInfoMapper.findByUserId(userId);
+
+
+        if (!CollectionUtils.isEmpty(oldBabyInfoList)) {
+            oldBabyInfoList.stream().forEach(babyInfo -> {
+                lactationTodoDelayedTask.remove(new LactationTodo(userId, babyInfo.getBabyId()));
+            });
+        }
+
         if (!CollectionUtils.isEmpty(babyInfoList)) {
             babyInfoList.stream().forEach(babyInfo -> {
                 TodoType todoType = findLatestTodoType(babyInfo.getBabyBirthday());
                 createTodo(todoType, userInfo, babyInfo);
             });
         }
-
     }
 
 
@@ -81,7 +86,7 @@ public class LactationTodoService {
                     currentTodoType = todoTypeMapper.findById(currentTodoType.getNextId());
                 }
                 babyTodoResp.setBabyName(babyInfo.getBabyName());
-                babyTodoResp.setBirthDate(DateUtil.format(babyInfo.getBabyBirthday()));
+                babyTodoResp.setBirthDate(getBirthDateFormat(babyInfo.getBabyBirthday()));
                 babyTodoResp.setTodoItemList(todoItemList);
                 return babyTodoResp;
             }).collect(Collectors.toList()));
@@ -159,5 +164,14 @@ public class LactationTodoService {
 
         weiXinTemplate.setData(lactationMessageData);
         return weiXinTemplate;
+    }
+
+    private String getBirthDateFormat(Date birthDate) {
+        int monthDiff = DateUtil.getBabyMonthDiff(birthDate);
+        if (monthDiff > 1) {
+            return monthDiff + "个月";
+        }
+        int birthDays = DateUtil.getIntervalOfCalendarDay(new Date(), birthDate);
+        return birthDays + "天";
     }
 }

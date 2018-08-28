@@ -11,7 +11,7 @@ import java.util.Date;
  */
 public class DateUtil {
 
-    private static final String DATE_FORMAT_TEMPLATE = "yyyy-MM-dd";
+    private static final String DATE_FORMAT_TEMPLATE = "yyyy年MM月dd日";
     public static Date addSeconds(Date from, int seconds) {
         JDateTime toConvert = new JDateTime(from);
         toConvert.addSecond(seconds);
