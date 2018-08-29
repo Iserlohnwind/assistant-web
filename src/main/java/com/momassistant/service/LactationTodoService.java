@@ -86,7 +86,7 @@ public class LactationTodoService {
                     currentTodoType = todoTypeMapper.findById(currentTodoType.getNextId());
                 }
                 babyTodoResp.setBabyName(babyInfo.getBabyName());
-                babyTodoResp.setBirthDate(getBirthDateFormat(babyInfo.getBabyBirthday()));
+                babyTodoResp.setBabyBirth(getBabyBirth(babyInfo.getBabyBirthday()));
                 babyTodoResp.setTodoItemList(todoItemList);
                 return babyTodoResp;
             }).collect(Collectors.toList()));
@@ -149,7 +149,7 @@ public class LactationTodoService {
         LactationMessageData lactationMessageData = new LactationMessageData();
 
         Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
-        lactationMessageData.setFirst(new WeiXinSendValue("尊敬的家长,您好!您的孩子今日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!", "#888888"));
+        lactationMessageData.setFirst(new WeiXinSendValue("尊敬的家长,您好!您的孩子近日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!", "#888888"));
         lactationMessageData.setKeyword1(new WeiXinSendValue(String.format("姓名：%s", babyInfo.getBabyName()), "#888888"));
         lactationMessageData.setKeyword2(new WeiXinSendValue(String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()), "#888888"));
         lactationMessageData.setKeyword3(new WeiXinSendValue(DateUtil.format(todoDate), "#888888"));
@@ -166,12 +166,24 @@ public class LactationTodoService {
         return weiXinTemplate;
     }
 
-    private String getBirthDateFormat(Date birthDate) {
+    private BabyBirth getBabyBirth(Date birthDate) {
+        BabyBirth babyBirth = new BabyBirth();
+        int birthNum;
+        String birthUnit;
         int monthDiff = DateUtil.getBabyMonthDiff(birthDate);
-        if (monthDiff > 1) {
-            return monthDiff + "个月";
+        if (monthDiff >= 12) {
+            babyBirth.setBirthNum(monthDiff / 12);
+            babyBirth.setBirthUnit("岁");
+
+        } else if (monthDiff > 1) {
+            babyBirth.setBirthNum(monthDiff);
+            babyBirth.setBirthUnit("月");
+        } else {
+            int birthDays = DateUtil.getIntervalOfCalendarDay(new Date(), birthDate);
+
+            babyBirth.setBirthNum(birthDays);
+            babyBirth.setBirthUnit("天");
         }
-        int birthDays = DateUtil.getIntervalOfCalendarDay(new Date(), birthDate);
-        return birthDays + "天";
+        return babyBirth;
     }
 }

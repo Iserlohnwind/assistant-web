@@ -15,7 +15,7 @@ public class BabyTodoResp implements Serializable{
      */
     private String babyName;
 
-    private String birthDate;
+    private BabyBirth babyBirth;
 
     private List<TodoItem> todoItemList;
 }

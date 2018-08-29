@@ -53,11 +53,10 @@ public abstract class DelayedTask<T extends Todo> {
                 DelayedMessage<T> delayedMessage = t.take();
                 if (delayedMessage != null) {
                     //修改问题的状态
-                    T message = delayedMessage.getMessage();
-                    if (message == null) {
+                    if (delayedMessage.getMessage() == null) {
                         continue;
                     }
-                    executor.execute(excuteRunable(message));
+                    executor.execute(excuteRunable(delayedMessage));
                     delayedMessageSerializer.delete(delayedMessage);
                 }
             } catch (Exception e) {
@@ -103,19 +102,20 @@ public abstract class DelayedTask<T extends Todo> {
         t.addAll(delayedMessageSerializer.deSerialize());
     }
 
-    public Runnable excuteRunable(T todo) {
+    public Runnable excuteRunable(DelayedMessage delayedMessage) {
         return new Runnable() {
             @Override
             public void run() {
 
                 CommonTodoService commonTodoService = SpringContextAware.getBean(CommonTodoService.class);
                 WeiXinMessageService weiXinMessageService = SpringContextAware.getBean(WeiXinMessageService.class);
-                if (commonTodoService.checkTodoNotifySwitchOn(todo.getUserId())){
+                if (commonTodoService.checkTodoNotifySwitchOn(delayedMessage.getMessage().getUserId())){
                     //发送过程，暂未实现
-                    weiXinMessageService.sendTemplateMessage(todo.getWeiXinTemplate());
+                    weiXinMessageService.sendTemplateMessage(delayedMessage.getMessage().getWeiXinTemplate());
                 }
+                delayedMessageSerializer.delete(delayedMessage);
                 //新建下一个提醒,存入队列
-                createNextTodo(todo);
+                createNextTodo(delayedMessage.getMessage());
             }
         };
     }
