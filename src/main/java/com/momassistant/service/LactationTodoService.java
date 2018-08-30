@@ -14,6 +14,7 @@ import com.momassistant.wechat.GestationMessageData;
 import com.momassistant.wechat.LactationMessageData;
 import com.momassistant.wechat.WeiXinSendValue;
 import com.momassistant.wechat.WeiXinTemplate;
+import jodd.datetime.JDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Async;
@@ -96,8 +97,8 @@ public class LactationTodoService {
 
     public void createTodo(TodoType todoType, UserInfo userInfo, BabyInfo babyInfo) {
         if (todoType != null) {
-            Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
-            Date sendDate = caculateSendDate(todoDate);
+            Date todoDate = getTodoDay(babyInfo.getBabyBirthday(), todoType.getTodoMonth());
+            Date sendDate = getSendDate(todoDate);
             WeiXinTemplate weiXinTemplate = buildWeixinTemplate(userInfo, babyInfo, todoType);
             LactationTodo todo = new LactationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), weiXinTemplate, babyInfo);
             lactationTodoDelayedTask.put(sendDate, todo);
@@ -116,26 +117,10 @@ public class LactationTodoService {
         return todoType;
     }
 
-
-    private Date caculateTodoDate(Date birthDate, TodoType todoType) {
-        Date todoDate = DateUtil.addDays(DateUtil.addMonths(birthDate, todoType.getTodoMonth()), 1);
-        return todoDate;
-    }
-
-    private Date caculateSendDate(Date todoDate) {
-        Date sendDate = DateUtil.addDays(todoDate, -6);
-        Date now = new Date();
-        while (sendDate.before(now)) {
-            sendDate = DateUtil.addDays(sendDate, 1);
-        }
-        return sendDate;
-    }
-
-
     private TodoItem transferTodoTypeToItem(Date birthDate, TodoType todoType) {
         TodoItem todoItem = new TodoItem();
         todoItem.setTypeId(todoType.getId());
-        Date todoDate = caculateTodoDate(birthDate, todoType);
+        Date todoDate = getTodoDay(birthDate, todoType.getTodoMonth());
         todoItem.setTodoDate(DateUtil.format(todoDate));
         todoItem.setTodoTitle(todoType.getTitle());
         return todoItem;
@@ -148,7 +133,7 @@ public class LactationTodoService {
         weiXinTemplate.setTouser(userInfo.getPaOpenId());
         LactationMessageData lactationMessageData = new LactationMessageData();
 
-        Date todoDate = caculateTodoDate(babyInfo.getBabyBirthday(), todoType);
+        Date todoDate = getTodoDay(babyInfo.getBabyBirthday(), todoType.getTodoMonth());
         lactationMessageData.setFirst(new WeiXinSendValue("尊敬的家长,您好!您的孩子近日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!", "#888888"));
         lactationMessageData.setKeyword1(new WeiXinSendValue(String.format("姓名：%s", babyInfo.getBabyName()), "#888888"));
         lactationMessageData.setKeyword2(new WeiXinSendValue(String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()), "#888888"));
@@ -168,8 +153,6 @@ public class LactationTodoService {
 
     private BabyBirth getBabyBirth(Date birthDate) {
         BabyBirth babyBirth = new BabyBirth();
-        int birthNum;
-        String birthUnit;
         int monthDiff = DateUtil.getBabyMonthDiff(birthDate);
         if (monthDiff >= 12) {
             babyBirth.setBirthNum(monthDiff / 12);
@@ -186,4 +169,68 @@ public class LactationTodoService {
         }
         return babyBirth;
     }
+
+
+
+    private Date getTodoDay(Date birthDate, int todoMonth) {
+        if (todoMonth == 0) {
+            return birthDate;
+        }
+        JDateTime birthJDateTime = new JDateTime(birthDate);
+        birthJDateTime.addMonth(todoMonth);
+        birthJDateTime.addDay(1);
+        Date dayFrom = birthJDateTime.convertToDate();
+        if (dayFrom.before(DateUtil.getTomorrow())) {
+            dayFrom = DateUtil.getTomorrow();
+        }
+        return dayFrom;
+    }
+
+    private Date getSendDate(Date todoDate) {
+        Date sendDate = DateUtil.addDays(todoDate, -3);
+        Date now = new Date();
+        while (sendDate.before(now)) {
+            sendDate = DateUtil.addDays(sendDate, 1);
+        }
+
+        if (sendDate.after(todoDate)) {
+            sendDate = todoDate;
+        }
+        return sendDate;
+    }
+//
+//    public static void main(String[] args) {
+//        Date birthDate = DateUtil.getTomorrow();
+//        for (int j = 1;j<=360;j++) {
+//            birthDate = DateUtil.addDays(birthDate, -1);
+//            int minTodoMonth;
+//            if (DateUtil.lessThan24Hour(birthDate)) {
+//                minTodoMonth = 0;
+//            } else {
+//                minTodoMonth = Math.max(DateUtil.getBabyMonthDiff(birthDate), 1);
+//            }
+//            System.out.println();
+//
+//            System.out.println(String.format("todo:%s,send:%s",DateUtil.format(getTodoDaysta(birthDate, minTodoMonth)), DateUtil.format(getSendDate(getTodoDaysta(birthDate, minTodoMonth)))));
+//
+//
+//        }
+//    }
+//
+//    public static void main1(String[] args) {
+//        Date birthDate = DateUtil.getTomorrow();
+//
+//        for (int j = 1;j<=30;j++) {
+//            birthDate = DateUtil.addDays(birthDate, -1);
+//            for (int i = 0; i <= 12; i++) {
+//                Date dayFrom = getTodoDayFrom(birthDate, i);
+//                Date dayTo = getTodoDayTo(birthDate, i);
+//                System.out.println(String.format("生日:%s,from:%s,to:%s", DateUtil.format(birthDate), DateUtil.format(dayFrom), DateUtil.format(dayTo)));
+//            }
+//
+//            System.out.println();
+//        }
+//    }
+
+
 }

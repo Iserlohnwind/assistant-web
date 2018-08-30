@@ -2,6 +2,7 @@ package com.momassistant.utils;
 
 import jodd.datetime.JDateTime;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,10 +13,26 @@ import java.util.Date;
 public class DateUtil {
 
     private static final String DATE_FORMAT_TEMPLATE = "yyyy年MM月dd日";
+    private static final String DATE_ZERO = "yyyy-MM-dd 00:00:00";
+
+
+    public static Date parse(String date, String pattern) {
+        try {
+            return (new SimpleDateFormat(pattern)).parse(date);
+        } catch (Exception e) {
+            return null;
+        }
+    }
     public static Date addSeconds(Date from, int seconds) {
         JDateTime toConvert = new JDateTime(from);
         toConvert.addSecond(seconds);
         return toConvert.convertToDate();
+    }
+
+    public static Date getTomorrow() {
+        JDateTime convert = new JDateTime(addDays(new Date(), 1));
+        convert.set(convert.getYear(), convert.getMonth(), convert.getDay());
+        return convert.convertToDate();
     }
 
     public static Date addDays(Date from, int days) {
@@ -37,7 +54,7 @@ public class DateUtil {
         JDateTime nowJDateTime = new JDateTime(new Date());
         diff += (nowJDateTime.getYear() - birthJDateTime.getYear()) * 12;
         diff += nowJDateTime.getMonth() - birthJDateTime.getMonth();
-        if (nowJDateTime.getDay() < birthJDateTime.getDay()) {
+        if (nowJDateTime.getDay() <= birthJDateTime.getDay()) {
             diff -= 1;
         }
         return diff;

@@ -84,6 +84,7 @@ public class GestationTodoService {
         Date sendDate = caculateSendDate(todoDate);
         WeiXinTemplate<GestationMessageData> weiXinTemplate = buildWeixinTemplate(userInfo, todoType);
         GestationTodo todo = new GestationTodo(todoType.getId(), userInfo.getUserId(), userInfo.getOpenId(), weiXinTemplate);
+        gestationTodoDelayedTask.remove(new GestationTodo(userInfo.getUserId()));
         gestationTodoDelayedTask.put(sendDate, todo);
     }
 
