@@ -3,6 +3,7 @@ package com.momassistant.service;
 import com.alibaba.fastjson.JSONObject;
 import com.momassistant.entity.response.TodoItem;
 import com.momassistant.entity.response.UserGestationTodoResp;
+import com.momassistant.enums.Color;
 import com.momassistant.enums.TodoMainType;
 import com.momassistant.enums.WechatMsgTemplate;
 import com.momassistant.mapper.TodoLogMapper;
@@ -44,10 +45,6 @@ public class GestationTodoService {
     @Autowired
     @Qualifier("gestationTodoDelayedTask")
     private DelayedTask gestationTodoDelayedTask;
-
-    @Autowired
-    private TodoLogService todoLogService;
-
     /**
      * 修改孕期的时候初始化todo
      * @param userId
@@ -151,15 +148,14 @@ public class GestationTodoService {
         weiXinTemplate.setTouser(userInfo.getPaOpenId());
         GestationMessageData gestationMessageData = new GestationMessageData();
         Date todoDate = caculateTodoDate(userInfo.getEdc(), todoType);
-        Date sendDate = caculateSendDate(todoDate);
         int timeRemaining = DateUtil.getIntervalOfCalendarDay(todoDate, new Date());
-        gestationMessageData.setFirst(new WeiXinSendValue(String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()), "#888888"));
-        gestationMessageData.setKeyword1(new WeiXinSendValue(DateUtil.format(todoDate), "#888888"));
-        gestationMessageData.setRemark(new WeiXinSendValue("点击查看本次产检更多注意事项吧~", "#888888"));
+        gestationMessageData.setFirst(new WeiXinSendValue(String.format(FIRST_TEMPLATE, timeRemaining, todoType.getTitle()), Color.BLACK.getCode()));
+        gestationMessageData.setKeyword1(new WeiXinSendValue(DateUtil.format(todoDate), Color.BLACK.getCode()));
+        gestationMessageData.setRemark(new WeiXinSendValue("点击查看本次产检更多注意事项吧~", Color.BLACK.getCode()));
         List<TodoTypeDetail> todoTypeDetailList = todoTypeDetailMapper.findByTypeId(todoType.getId());
         todoTypeDetailList.stream().forEach(todoTypeDetail -> {
             if ("keyword2".equals(todoTypeDetail.getKeyword())) {
-                gestationMessageData.setKeyword2(new WeiXinSendValue(todoTypeDetail.getContent(), "#888888"));
+                gestationMessageData.setKeyword2(new WeiXinSendValue(todoTypeDetail.getContent(), Color.BLACK.getCode()));
             }
         });
         weiXinTemplate.setData(gestationMessageData);

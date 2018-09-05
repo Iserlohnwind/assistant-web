@@ -9,10 +9,10 @@ import java.util.List;
 public interface BabyInfoMapper {
 
     @Insert(
-            "insert into BabyInfo(userId,babyName,babyGender,babyBirthday) " +
-                    "values (#{userId},#{babyName},#{babyGender},#{babyBirthday})"
+            "insert into BabyInfo(userId,babyName,babyGender,babyBirthday,hospital) " +
+                    "values (#{userId},#{babyName},#{babyGender},#{babyBirthday},#{hospital})"
     )
-    void insertBabyInfo(@Param("userId")int userId, @Param("babyName")String babyName, @Param("babyGender") int babyGender, @Param("babyBirthday") Date babyBirthday);
+    void insertBabyInfo(@Param("userId")int userId, @Param("babyName")String babyName, @Param("babyGender") int babyGender, @Param("babyBirthday") Date babyBirthday, @Param("hospital") String hospital);
 
 
     @Select("SELECT * FROM BabyInfo WHERE userId=#{userId}")

@@ -14,4 +14,5 @@ public class BabyInfoReq {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date babyBirthday;
     private int babyGender;
+    private String hospital;
 }

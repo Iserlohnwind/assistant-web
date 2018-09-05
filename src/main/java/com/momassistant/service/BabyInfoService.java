@@ -24,7 +24,8 @@ public class BabyInfoService {
             babyInfoMapper.insertBabyInfo(HtmlUtil.getUserId(),
                     babyInfoReq.getBabyName(),
                     babyInfoReq.getBabyGender(),
-                    babyInfoReq.getBabyBirthday()
+                    babyInfoReq.getBabyBirthday(),
+                    babyInfoReq.getHospital()
             );
         }
     }

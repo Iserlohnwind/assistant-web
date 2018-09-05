@@ -1,16 +1,11 @@
 package com.momassistant.service;
 
-import com.alibaba.fastjson.JSONObject;
 import com.momassistant.entity.response.*;
-import com.momassistant.enums.GenderType;
-import com.momassistant.enums.TodoMainType;
-import com.momassistant.enums.TodoNotifySwitch;
-import com.momassistant.enums.WechatMsgTemplate;
+import com.momassistant.enums.*;
 import com.momassistant.mapper.*;
 import com.momassistant.mapper.model.*;
 import com.momassistant.message.*;
 import com.momassistant.utils.DateUtil;
-import com.momassistant.wechat.GestationMessageData;
 import com.momassistant.wechat.LactationMessageData;
 import com.momassistant.wechat.WeiXinSendValue;
 import com.momassistant.wechat.WeiXinTemplate;
@@ -134,16 +129,16 @@ public class LactationTodoService {
         LactationMessageData lactationMessageData = new LactationMessageData();
 
         Date todoDate = getTodoDay(babyInfo.getBabyBirthday(), todoType.getTodoMonth());
-        lactationMessageData.setFirst(new WeiXinSendValue("尊敬的家长,您好!您的孩子近日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!", "#888888"));
-        lactationMessageData.setKeyword1(new WeiXinSendValue(String.format("姓名：%s", babyInfo.getBabyName()), "#888888"));
-        lactationMessageData.setKeyword2(new WeiXinSendValue(String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()), "#888888"));
-        lactationMessageData.setKeyword3(new WeiXinSendValue(DateUtil.format(todoDate), "#888888"));
-        lactationMessageData.setKeyword4(new WeiXinSendValue(String.format("计划接种疫苗：%s", todoType.getTitle()), "#888888"));
+        lactationMessageData.setFirst(new WeiXinSendValue("尊敬的家长,您好!您的孩子近日需要接种疫苗,请及时安排您的孩子到指定接种点进行接种!", Color.BLACK.getCode()));
+        lactationMessageData.setKeyword1(new WeiXinSendValue(String.format("姓名：%s", babyInfo.getBabyName()), Color.BLACK.getCode()));
+        lactationMessageData.setKeyword2(new WeiXinSendValue(String.format("性别：%s", GenderType.getByType(babyInfo.getBabyGender()).getGenderTxt()), Color.BLACK.getCode()));
+        lactationMessageData.setKeyword3(new WeiXinSendValue(DateUtil.format(todoDate), Color.BLACK.getCode()));
+        lactationMessageData.setKeyword4(new WeiXinSendValue(String.format("计划接种疫苗：%s", todoType.getTitle()), Color.BLACK.getCode()));
 
         List<TodoTypeDetail> todoTypeDetailList = commonTodoService.findByTypeId(todoType.getId());
         todoTypeDetailList.stream().forEach(todoTypeDetail -> {
             if ("remark".equals(todoTypeDetail.getKeyword())) {
-                lactationMessageData.setRemark(new WeiXinSendValue(String.format("注意事项：%s", todoTypeDetail.getContent()), "#888888"));
+                lactationMessageData.setRemark(new WeiXinSendValue(String.format("注意事项：%s", todoTypeDetail.getContent()), Color.BLACK.getCode()));
             }
         });
 
@@ -198,39 +193,6 @@ public class LactationTodoService {
         }
         return sendDate;
     }
-//
-//    public static void main(String[] args) {
-//        Date birthDate = DateUtil.getTomorrow();
-//        for (int j = 1;j<=360;j++) {
-//            birthDate = DateUtil.addDays(birthDate, -1);
-//            int minTodoMonth;
-//            if (DateUtil.lessThan24Hour(birthDate)) {
-//                minTodoMonth = 0;
-//            } else {
-//                minTodoMonth = Math.max(DateUtil.getBabyMonthDiff(birthDate), 1);
-//            }
-//            System.out.println();
-//
-//            System.out.println(String.format("todo:%s,send:%s",DateUtil.format(getTodoDaysta(birthDate, minTodoMonth)), DateUtil.format(getSendDate(getTodoDaysta(birthDate, minTodoMonth)))));
-//
-//
-//        }
-//    }
-//
-//    public static void main1(String[] args) {
-//        Date birthDate = DateUtil.getTomorrow();
-//
-//        for (int j = 1;j<=30;j++) {
-//            birthDate = DateUtil.addDays(birthDate, -1);
-//            for (int i = 0; i <= 12; i++) {
-//                Date dayFrom = getTodoDayFrom(birthDate, i);
-//                Date dayTo = getTodoDayTo(birthDate, i);
-//                System.out.println(String.format("生日:%s,from:%s,to:%s", DateUtil.format(birthDate), DateUtil.format(dayFrom), DateUtil.format(dayTo)));
-//            }
-//
-//            System.out.println();
-//        }
-//    }
 
 
 }
