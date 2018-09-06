@@ -3,6 +3,7 @@ package com.momassistant.message;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.util.CollectionUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -56,6 +57,9 @@ public class DelayedMessageSerializer {
         try {
             File path = new File(dir);
             File[] files = path.listFiles();
+            if (files == null) {
+                return new ArrayList<>();
+            }
             for (File file : files) {
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
                 DelayedMessage delayedMessage = (DelayedMessage) ois.readObject();              //读出对象

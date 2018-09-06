@@ -69,8 +69,8 @@ public interface UserInfoMapper {
                           @Param("wechatName") String wechatName,
                           @Param("userHeadPic") String userHeadPic);
 
-    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion}, userType=1," +
-            "edc=#{edcDate} where id=#{userId} ")
+    @Update("<script>update UserInfo set userName=#{userName}, <when test='mobile!=null'>mobile=#{mobile},</when> userRegion=#{userRegion}, userType=1," +
+            "edc=#{edcDate} where id=#{userId}</script>")
     void updatePregancyInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
                             @Param("mobile") String mobile,
@@ -78,7 +78,7 @@ public interface UserInfoMapper {
                             @Param("edcDate") Date edcDate);
 
 
-    @Update("update UserInfo set userName=#{userName}, mobile=#{mobile}, userRegion=#{userRegion}, userType=2 where id=#{userId} ")
+    @Update("<script>update UserInfo set userName=#{userName}, <when test='mobile!=null'>mobile=#{mobile},</when> userRegion=#{userRegion}, userType=2 where id=#{userId}</script> ")
     void updateLactationInfo(@Param("userId") int userId,
                             @Param("userName") String userName,
                             @Param("mobile") String mobile,

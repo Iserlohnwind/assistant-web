@@ -13,6 +13,7 @@ import com.momassistant.entity.Response;
 import com.momassistant.utils.DateUtil;
 import com.momassistant.utils.HtmlUtil;
 import com.momassistant.utils.UserTokenGenerator;
+import com.momassistant.wechat.WeixinSmsService;
 import com.momassistant.wechat.WexinAuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -39,6 +40,9 @@ public class AuthController {
     private UserInfoService userInfoService;
     @Autowired
     private WexinAuthService wexinAuthService;
+    @Autowired
+    private WeixinSmsService weixinSmsService;
+
     //获取凭证校检接口
     @ApiOperation(value = "获取凭证校检接口", notes = "获取凭证校检接口", httpMethod = "POST")
     @ApiImplicitParam(name = "code", value = "微信api返回的code", required = true, dataType = "String")
@@ -79,6 +83,11 @@ public class AuthController {
         }
         userInfoService.bindPublicAccount(HtmlUtil.getUserId(), openId);
         return Response.success(Boolean.TRUE);
+    }
+    @RequestMapping(value = "/auth/sendSms", method = RequestMethod.POST)
+    @UserValidate
+    public Response<Boolean> sendSms(String phoneNo) {
+        return Response.success(weixinSmsService.sendMessage(phoneNo));
     }
 
 }
